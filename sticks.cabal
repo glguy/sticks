@@ -14,16 +14,17 @@ executable sticks
     import:           warnings
     main-is:          Main.hs
     other-modules:
+        AutomaticSolve
+        Block
         ChooseBit
         GenericApplicative
+        GenericEach
+        ManualSolve
+        PQueue
+        Queue
+        Search
         Select
         TraversableCodec
-        Search
-        Queue
-        PQueue
-        Block
-        ManualSolve
-        AutomaticSolve
     default-extensions: BlockArguments
     build-depends:    base, ersatz, mtl, lens, containers, comonad
     hs-source-dirs:   app

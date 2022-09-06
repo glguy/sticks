@@ -8,30 +8,32 @@ import GenericApplicative
 import GHC.Generics
 import ChooseBit
 import Control.Lens
+import GenericEach
 
 data Side a = Side { cut1, cut2, cut3, cut4, cut5 :: a }
     deriving (Read, Show, Eq, Ord, Functor, Foldable, Traversable, Generic, Generic1, Equatable)
-    deriving ChooseBit   via GenericChooseBit (Side a)
-    deriving Codec       via (TraversableCodec Side a)
-    deriving Applicative via (GenericApplicative Side)
+    deriving ChooseBit   via GenericChooseBit   (Side a)
+    deriving Codec       via TraversableCodec   Side a
+    deriving Applicative via GenericApplicative Side
 
 data Stick a = Stick { top, left, bottom, right :: Side a }
     deriving (Read, Show, Eq, Ord, Functor, Foldable, Traversable, Generic, Generic1, Equatable)
-    deriving ChooseBit   via GenericChooseBit    (Stick a)
-    deriving Codec       via (TraversableCodec   Stick a)
-    deriving Applicative via (GenericApplicative Stick)
+    deriving ChooseBit   via GenericChooseBit   (Stick a)
+    deriving Codec       via TraversableCodec   Stick a
+    deriving Applicative via GenericApplicative Stick
 
 data Block a = Block { stick1, stick2, stick3, stick4, stick5, stick6 :: Stick a }
     deriving (Read, Show, Eq, Ord, Functor, Foldable, Traversable, Generic, Generic1, Equatable)
-    deriving ChooseBit   via GenericChooseBit    (Block a)
-    deriving Codec       via (TraversableCodec   Block a)
-    deriving Applicative via (GenericApplicative Block)
+    deriving ChooseBit   via GenericChooseBit   (Block a)
+    deriving Codec       via TraversableCodec   Block a
+    deriving Applicative via GenericApplicative Block
 
 instance Each (Stick a) (Stick b) (Side a) (Side b) where
-    each f (Stick a b c d) = Stick <$> f a <*> f b <*> f c <*> f d
+    each = genericEach
 
 instance Each (Block a) (Block b) (Stick a) (Stick b) where
-    each f (Block a b c d e x) = Block <$> f a <*> f b <*> f c <*> f d <*> f e <*> f x
+    each = genericEach
+    {-# Inline each #-}
 
 shifts :: Boolean a => Stick a -> [Stick a]
 shifts s = [s, over each shiftl s, over each shiftr s]
