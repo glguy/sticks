@@ -30,6 +30,7 @@ data Block a = Block { stick1, stick2, stick3, stick4, stick5, stick6 :: Stick a
 
 instance Each (Stick a) (Stick b) (Side a) (Side b) where
     each = genericEach
+    {-# Inline each #-}
 
 instance Each (Block a) (Block b) (Stick a) (Stick b) where
     each = genericEach
