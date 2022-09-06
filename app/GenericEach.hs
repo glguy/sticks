@@ -10,7 +10,7 @@ genericEach = confusing (generic . geach)
 {-# Inline genericEach #-}
 
 class GEach s t a b where
-    geach :: Traversal (s x) (t y) a b 
+    geach :: Traversal (s x) (t y) a b
 
 instance GEach s t a b => GEach (M1 i c s) (M1 j d t) a b where
     geach f (M1 x) = M1 <$> geach f x

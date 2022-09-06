@@ -1,9 +1,11 @@
-module ManualSolve (manualSolve) where
+module ManualSolve (brute, manualSolve) where
 
 import Block
 import Control.Lens
 import Control.Comonad.Store ( ComonadStore(experiment) )
 import Search (bfs)
+import Data.List (permutations)
+import Control.Monad ((<=<))
 
 manualSolve ::
     [Integer] {- ^ order of insertion -} ->
@@ -32,3 +34,8 @@ blockStep b = filter checkBlock (experiment editStick =<< holesOf each b)
         editStick s = slider s ++ slidel s ++ [turnLeft s, turnRight s]
         slider = each \(Side x y z w v) -> [Side False x y z w | not v]
         slidel = each \(Side x y z w v) -> [Side y z w v False | not x]
+
+brute :: Block Bool -> [Block Bool]
+brute b =
+    filter checkBlock
+    $ each (flips <=< turns <=< shifts) =<< partsOf each permutations b

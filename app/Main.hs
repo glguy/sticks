@@ -18,7 +18,7 @@ import Data.Foldable (for_)
 import Ersatz
 
 import Block (Block(..), Stick(..), Side(..))
-import ManualSolve (manualSolve)
+import ManualSolve (manualSolve, brute)
 import AutomaticSolve (fullsolve)
 
 block0 :: Boolean a => Block a
@@ -58,12 +58,13 @@ block0 = Block
     x = false
 
 main :: IO ()
-main = go []
+main = go [] []
     where
-    go seen =
+    go seen partials =
      do res <- solveWith cryptominisat5
          do (a,b,c) <- fullsolve block0
-            assert (all (c:b /==) seen)
+            assert (all (c /==) seen)
+            assert (all (c:b /==) partials)
             pure (a,b,c)
         case res of
             (Satisfied, Just (order,steps,sol))
@@ -72,7 +73,8 @@ main = go []
                  do putStrLn "# top.. left. bottm right"
                     for_ order \i ->
                         putStrLn (show (i+1) ++ " " ++ showStick (sticks !! fromInteger i))
-              | otherwise -> go (encode (sol:steps) : seen)
+                    go (encode sol : seen) []
+              | otherwise -> go seen (map encode (sol:steps):partials)
             _ -> pure ()
 
 -----------------------------------------------------------------------
