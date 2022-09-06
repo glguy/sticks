@@ -1,4 +1,4 @@
-{-# Language UndecidableInstances, FlexibleInstances, TypeOperators, FlexibleContexts, DeriveTraversable #-}
+{-# Language UndecidableInstances, FlexibleInstances, FlexibleContexts #-}
 module GenericApplicative where
 
 import GHC.Generics

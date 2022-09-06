@@ -1,4 +1,4 @@
-{-# Language LambdaCase, ImportQualifiedPost, BangPatterns #-}
+{-# Language BangPatterns #-}
 {-|
 Module      : Advent.Search
 Description : Generalized graph search

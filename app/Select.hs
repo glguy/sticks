@@ -1,4 +1,4 @@
-{-# Language TypeFamilies, DeriveTraversable #-}
+{-# Language TypeFamilies #-}
 module Select
   ( Select
   , runSelect

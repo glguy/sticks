@@ -1,5 +1,5 @@
 {-|
-Module      : Advent.Queue
+Module      : Queue
 Description : FIFO queue implementation
 Copyright   : (c) Eric Mertens, 2021
 License     : ISC

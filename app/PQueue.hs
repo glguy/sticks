@@ -1,4 +1,3 @@
-{-# Language ImportQualifiedPost #-}
 {-|
 Module      : PQueue
 Description : Int-priority min queue

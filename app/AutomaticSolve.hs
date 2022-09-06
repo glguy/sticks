@@ -1,12 +1,12 @@
 module AutomaticSolve where
 
-import Ersatz
 import Block
-import ChooseBit
-import Select
+import ChooseBit ( ChooseBit(chooseBit) )
 import Control.Lens
+import Control.Monad ((<=<))
 import Data.Traversable (for)
-import Control.Monad ( (<=<) )
+import Ersatz
+import Select (selectList, runSelect, selectPermutation)
 
 selectPermutation' :: MonadSAT s m => ChooseBit a => [a] -> m [a]
 selectPermutation' xs = map runSelect <$> selectPermutation xs

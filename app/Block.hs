@@ -1,14 +1,14 @@
-{-# Language MultiParamTypeClasses, UndecidableInstances, DeriveAnyClass, DerivingVia, DeriveGeneric, DeriveTraversable #-}
+{-# Language MultiParamTypeClasses, UndecidableInstances #-}
 module Block where
 
 import Prelude hiding ((||), and)
 import Ersatz
-import TraversableCodec
-import GenericApplicative
-import GHC.Generics
-import ChooseBit
-import Control.Lens
-import GenericEach
+import TraversableCodec ( TraversableCodec(..) )
+import GenericApplicative ( GenericApplicative(..) )
+import GHC.Generics ( Generic, Generic1 )
+import ChooseBit ( GenericChooseBit(..), ChooseBit )
+import Control.Lens ( over, Each(each) )
+import GenericEach ( genericEach )
 
 data Side a = Side { cut1, cut2, cut3, cut4, cut5 :: a }
     deriving (Read, Show, Eq, Ord, Functor, Foldable, Traversable, Generic, Generic1, Equatable)

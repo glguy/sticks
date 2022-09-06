@@ -1,4 +1,4 @@
-{-# Language EmptyCase, StandaloneDeriving, DerivingVia, UndecidableInstances, TypeOperators, FlexibleContexts, DefaultSignatures #-}
+{-# Language UndecidableInstances, FlexibleContexts #-}
 module ChooseBit where
 
 import Prelude hiding ((&&), not)

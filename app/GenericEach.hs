@@ -1,8 +1,8 @@
-{-# Language EmptyCase, TypeOperators, FlexibleContexts, FlexibleInstances, MultiParamTypeClasses #-}
+{-# Language FlexibleContexts, FlexibleInstances, MultiParamTypeClasses #-}
 module GenericEach (genericEach) where
 
-import GHC.Generics
 import Control.Lens (Traversal, confusing)
+import GHC.Generics
 import GHC.Generics.Lens (generic)
 
 genericEach :: (Generic s, Generic t, GEach (Rep s) (Rep t) a b) => Traversal s t a b
@@ -26,7 +26,7 @@ instance (GEach s1 t1 a b, GEach s2 t2 a b) => GEach (s1 :+: s2) (t1 :+: t2) a b
     {-# Inline geach #-}
 
 instance GEach V1 V1 a b where
-    geach _ v = case v of {}
+    geach _ = \case {}
     {-# Inline geach #-}
 
 instance GEach U1 U1 a b where
