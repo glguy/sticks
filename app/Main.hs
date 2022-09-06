@@ -18,7 +18,7 @@ import Data.Foldable (for_)
 import Ersatz
 
 import Block (Block(..), Stick(..), Side(..))
-import ManualSolve (manualSolve, brute)
+import ManualSolve (manualSolve)
 import AutomaticSolve (fullsolve)
 
 block0 :: Boolean a => Block a
@@ -75,7 +75,8 @@ main = go [] []
                         putStrLn (show (i+1) ++ " " ++ showStick (sticks !! fromInteger i))
                     go (encode sol : seen) []
               | otherwise -> go seen (map encode (sol:steps):partials)
-            _ -> pure ()
+            (Unsatisfied, _) -> pure ()
+            _ -> fail "what the what?"
 
 -----------------------------------------------------------------------
 -- simple block rendering
