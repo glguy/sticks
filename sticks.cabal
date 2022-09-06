@@ -1,0 +1,30 @@
+cabal-version:      3.4
+name:               sticks
+version:            0.1.0.0
+license:            ISC
+license-file:       LICENSE
+author:             Eric Mertens
+maintainer:         emertens@gmail.com
+build-type:         Simple
+
+common warnings
+    ghc-options: -Wall
+
+executable sticks
+    import:           warnings
+    main-is:          Main.hs
+    other-modules:
+        ChooseBit
+        GenericApplicative
+        Select
+        TraversableCodec
+        Search
+        Queue
+        PQueue
+        Block
+        ManualSolve
+        AutomaticSolve
+    default-extensions: BlockArguments
+    build-depends:    base, ersatz, mtl, lens, containers, comonad
+    hs-source-dirs:   app
+    default-language: Haskell2010
