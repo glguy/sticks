@@ -29,9 +29,9 @@ fullsolve start =
     -- the first location unflipped.
     final <-
         transformBlock start $
-        each (selectList' turns) <=<
+        dropping 1 each (selectList' flips) <=<
         partsOf (dropping 1 each) selectPermutation' <=<
-        dropping 1 each (selectList' flips)
+        each (selectList' turns)
 
     order <- selectPermutation' [0,1,2,3,4,5 :: Bits]
 
