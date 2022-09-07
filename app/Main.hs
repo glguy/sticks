@@ -24,36 +24,12 @@ import AutomaticSolve (fullsolve)
 
 block0 :: Boolean a => Block a
 block0 = Block
-    (Stick
-        (Side x u x x x)
-        (Side x x x x x)
-        (Side x x x x x)
-        (Side x x x x x))
-    (Stick
-        (Side u u x u x)
-        (Side x u x x x)
-        (Side x x x x x)
-        (Side x u u x x))
-    (Stick
-        (Side x u x x x)
-        (Side x x x x x)
-        (Side x u u x x)
-        (Side x u x x x))
-    (Stick
-        (Side u u x x x)
-        (Side x x x x x)
-        (Side x x x x x)
-        (Side x u x x x))
-    (Stick
-        (Side x u x x x)
-        (Side x u x x x)
-        (Side x u u x x)
-        (Side x x x x x))
-    (Stick
-        (Side u u x u x)
-        (Side x u u x x)
-        (Side x x x x x)
-        (Side x u x x x))
+    (Stick (Side x u x x x) (Side x x x x x) (Side x x x x x) (Side x x x x x))
+    (Stick (Side u u x u x) (Side x u x x x) (Side x x x x x) (Side x u u x x))
+    (Stick (Side x u x x x) (Side x x x x x) (Side x u u x x) (Side x u x x x))
+    (Stick (Side u u x x x) (Side x x x x x) (Side x x x x x) (Side x u x x x))
+    (Stick (Side x u x x x) (Side x u x x x) (Side x u u x x) (Side x x x x x))
+    (Stick (Side u u x u x) (Side x u u x x) (Side x x x x x) (Side x u x x x))
     where
     u = true
     x = false
@@ -84,11 +60,7 @@ main = go [] Map.empty
 -----------------------------------------------------------------------
 
 showStick :: Stick Bool -> String
-showStick (Stick x y z w) = unwords (map showSide [x,y,z,w])
+showStick = unwords . map showSide . toListOf each
 
 showSide :: Side Bool -> String
-showSide = foldMap showCut
-
-showCut :: Bool -> String
-showCut True = "▂"
-showCut False = "▄"
+showSide = foldMap \x -> if x then "▂" else "▄"

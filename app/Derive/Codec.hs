@@ -1,7 +1,7 @@
 {-# Language TypeFamilies #-}
 module Derive.Codec where
 
-import Ersatz
+import Ersatz (Codec(..))
 
 newtype TraversableCodec f a = TC (f a)
 
