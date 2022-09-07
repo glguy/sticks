@@ -1,5 +1,5 @@
 {-|
-Module      : PQueue
+Module      : Searching.PQueue
 Description : Int-priority min queue
 Copyright   : (c) Eric Mertens, 2018
 License     : ISC
@@ -10,7 +10,7 @@ Priority queue with 'Int' priorities returning smallest priority first.
 -}
 {-# Language PatternSynonyms, ViewPatterns, DeriveTraversable #-}
 {-# Options_GHC -Wno-name-shadowing #-}
-module PQueue
+module Searching.PQueue
   ( PQueue(Empty, (:<|))
 
   -- * Construction
@@ -21,7 +21,7 @@ module PQueue
   , insert
 
   -- * Query
-  , PQueue.null
+  , Searching.PQueue.null
   , view
   , viewWithPriority
   ) where
@@ -55,7 +55,7 @@ instance Read a => Read (PQueue a) where
 
 -- | Empty priority queue
 pattern Empty :: PQueue a
-pattern Empty <- (PQueue.null -> True)
+pattern Empty <- (Searching.PQueue.null -> True)
   where
     Empty = PQ IntMap.empty
 

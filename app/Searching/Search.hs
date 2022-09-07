@@ -1,6 +1,6 @@
 {-# Language BangPatterns #-}
 {-|
-Module      : Advent.Search
+Module      : Searching.Search
 Description : Generalized graph search
 Copyright   : (c) Eric Mertens, 2019-2021
 License     : ISC
@@ -10,7 +10,7 @@ These implementations provide a lazily-generated list of visited
 states with the order defined by the search strategy.
 
 -}
-module Search (
+module Searching.Search (
   -- * Depth-first search
   dfs, dfsOn,
 
@@ -23,8 +23,8 @@ module Search (
 
   ) where
 
-import PQueue qualified
-import Queue qualified
+import Searching.PQueue qualified as PQueue
+import Searching.Queue qualified as Queue
 import Data.Foldable (foldl')
 import Data.Set qualified as Set
 import Data.IntSet qualified as IntSet

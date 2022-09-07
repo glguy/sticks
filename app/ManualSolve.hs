@@ -1,9 +1,10 @@
 module ManualSolve (manualSolve) where
 
-import Block
 import Control.Lens
 import Control.Comonad.Store ( ComonadStore(experiment) )
-import Search (bfs)
+
+import Block
+import Searching.Search (bfs)
 
 manualSolve ::
     [Integer] {- ^ order of insertion -} ->

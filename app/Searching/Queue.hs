@@ -1,5 +1,5 @@
 {-|
-Module      : Queue
+Module      : Searching.Queue
 Description : FIFO queue implementation
 Copyright   : (c) Eric Mertens, 2021
 License     : ISC
@@ -8,7 +8,7 @@ Maintainer  : emertens@gmail.com
 -}
 {-# Language PatternSynonyms, ViewPatterns #-}
 {-# Options_GHC -Wno-name-shadowing #-}
-module Queue (Queue(Empty, (:<|)), (|>), singleton, fromList, snoc, pop, appendList) where
+module Searching.Queue (Queue(Empty, (:<|)), (|>), singleton, fromList, snoc, pop, appendList) where
 
 import Data.Foldable (Foldable(..))
 

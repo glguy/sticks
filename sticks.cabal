@@ -23,9 +23,9 @@ executable sticks
         Derive.Codec
         Derive.Each
         ManualSolve
-        PQueue
-        Queue
-        Search
+        Searching.PQueue
+        Searching.Queue
+        Searching.Search
         Symbolic.ChooseBit
         Symbolic.Counting
         Symbolic.Select
