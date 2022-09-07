@@ -19,15 +19,16 @@ executable sticks
     other-modules:
         AutomaticSolve
         Block
-        ChooseBit
         Derive.Applicative
-        Derive.Each
         Derive.Codec
+        Derive.Each
         ManualSolve
         PQueue
         Queue
         Search
-        Select
+        Symbolic.ChooseBit
+        Symbolic.Counting
+        Symbolic.Select
 
     -- things that we shouldn't ever need to specify
     default-extensions:

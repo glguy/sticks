@@ -1,5 +1,5 @@
 {-# Language TypeFamilies #-}
-module Select
+module Symbolic.Select
   ( Select
   , runSelect
   , select
@@ -9,13 +9,14 @@ module Select
   , selectPermutationN
   ) where
 
-import Ersatz
-import ChooseBit ( ChooseBit(..) )
-import Data.List (tails)
-import Data.List.NonEmpty (NonEmpty(..))
 import Control.Applicative
 import Control.Monad.State
+import Data.List (tails)
+import Data.List.NonEmpty (NonEmpty(..))
+import Ersatz
 import Prelude hiding (any, and, or, (&&), (||) ,not)
+
+import Symbolic.ChooseBit (ChooseBit(chooseBit))
 
 -- | A set of choices and an index of the chosen element of that set
 data Select a = Selected a | Choice (Select a) (Select a) Bit

@@ -1,5 +1,5 @@
 {-# Language UndecidableInstances, FlexibleContexts #-}
-module ChooseBit where
+module Symbolic.ChooseBit where
 
 import Prelude hiding ((&&), not)
 import Ersatz

@@ -10,16 +10,15 @@ manualSolve ::
     [Block Bool] {- ^ SAT solver route -} ->
     Bool {- ^ route is valid -}
 manualSolve order steps =
-    go (map fromInteger order <> [-1]) steps
+    go (map fromInteger order) steps
     where
         setAt i = set (indexing each . index i)
         getAt i = (^?! indexing each . index i)
 
         -- replaces the extra gaps in the stages and copies over the inserted stick
-        go (i:j:ks) (x:y:zs) = pathExists x' y' && go (j:ks) (y:zs)
+        go (i:ks) (x:y:zs) = pathExists x' y && go ks (y:zs)
             where
                 x' = setAt i (getAt i y) x
-                y' = setAt j gapStick y
         go _ _ = True
 
 pathExists :: Block Bool -> Block Bool -> Bool

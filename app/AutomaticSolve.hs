@@ -1,52 +1,52 @@
 module AutomaticSolve where
 
-import Block
-import ChooseBit ( ChooseBit(chooseBit) )
-import Control.Lens
+import Prelude hiding (all)
+import Control.Lens (indexing, iover, dropping, partsOf, each)
 import Control.Monad ((<=<))
 import Data.Traversable (for)
-import Ersatz
-import Select (selectList, runSelect, selectPermutation)
+import Ersatz (assert, Bit, Bits, (===), MonadSAT)
+
+import Block
+import Symbolic.ChooseBit (ChooseBit(chooseBit))
+import Symbolic.Select (selectList, runSelect, selectPermutation)
 
 selectPermutation' :: MonadSAT s m => ChooseBit a => [a] -> m [a]
 selectPermutation' xs = map runSelect <$> selectPermutation xs
 
-selectList' :: MonadSAT s m => ChooseBit a => [a] -> m a
-selectList' xs = runSelect <$> selectList xs
+selectList' :: MonadSAT s m => ChooseBit b => (a -> [b]) -> a -> m b
+selectList' f x = runSelect <$> selectList (f x)
+
+transformBlock :: MonadSAT s m => Block Bit -> (Block Bit -> m (Block Bit)) -> m (Block Bit)
+transformBlock b f =
+ do b' <- f b
+    assert (checkBlock b')
+    pure b'
 
 fullsolve :: MonadSAT s m => Block Bit -> m ([Bits], [Block Bit], Block Bit)
 fullsolve start =
- do b1 <- each (selectList' . turns) start
-    b2 <- partsOf (dropping 1 each) selectPermutation' b1
-    b3 <- dropping 1 each (selectList' . flips) b2
-
-    -- check final configuration is valid
-    assert (checkBlock b3)
+ do -- Permute, flip, and spin the sticks into their final locations.
+    -- To reduce useless symmetries, the first stick is locked into
+    -- the first location unflipped.
+    final <-
+        transformBlock start $
+        each (selectList' turns) <=<
+        partsOf (dropping 1 each) selectPermutation' <=<
+        dropping 1 each (selectList' flips)
 
     order <- selectPermutation' [0,1,2,3,4,5 :: Bits]
 
-    let -- insert a full stick into the hole to check that the stick in the next step can be inserted
-        sss = zipWith (\i xs -> iover (indexing each) (\j x -> chooseBit x (pure false) (i === fromIntegral j)) xs) order
-            $ scanl (copyStick b3) emptyBlock order
+    -- generate the sequence of adding in sticks one-by-one
+    let steps_ = scanr (setStick gapStick) final order
 
     -- check that at each step the block can be shifted into a state where the next stick can be inserted
-    steps <- for sss \ss_ ->
-     do shifted <- each (selectList' . (turns <=< shifts)) ss_
-        assert (checkBlock shifted)
-        pure shifted
+    steps <- for (zip order steps_) \(i,step) ->
+        setStick gapStick i <$>
+        transformBlock
+            (setStick solidStick i step)
+            (each (selectList' (turns <=< shifts)))
 
-    pure (order, steps, b3)
+    pure (order, steps, final)
 
--- | Block with no sticks inserted
-emptyBlock :: Boolean a => Block a
-emptyBlock = Block gapStick gapStick gapStick gapStick gapStick gapStick
-
-copyStick ::
-  Block Bit {- source -} ->
-  Block Bit {- target -} ->
-  Bits      {- index  -} ->
-  Block Bit
-copyStick (Block s0 s1 s2 s3 s4 s5) (Block a0 a1 a2 a3 a4 a5) i =
-    Block (f 0 s0 a0) (f 1 s1 a1) (f 2 s2 a2) (f 3 s3 a3) (f 4 s4 a4) (f 5 s5 a5)
-  where
-    f j s x = chooseBit x s (i===j)
+-- | Insert the stick into the block at the zero-based index.
+setStick :: Stick Bit -> Bits {- ^ index -} -> Block Bit -> Block Bit
+setStick x i = iover (indexing each) \j y -> chooseBit y x (i === fromIntegral j)

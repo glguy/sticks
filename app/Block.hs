@@ -2,13 +2,14 @@
 module Block where
 
 import Prelude hiding ((||), and)
-import ChooseBit ( GenericChooseBit(..), ChooseBit )
-import Control.Lens ( over, Each(each) )
-import Derive.Applicative (GenericApplicative(..))
-import Derive.Codec ( TraversableCodec(..) )
-import Derive.Each ( genericEach )
+import Control.Lens (over, Each(each) )
 import Ersatz
-import GHC.Generics ( Generic, Generic1 )
+import GHC.Generics (Generic, Generic1)
+
+import Derive.Applicative (GenericApplicative(..))
+import Derive.Codec (TraversableCodec(..))
+import Derive.Each (genericEach)
+import Symbolic.ChooseBit (GenericChooseBit(..), ChooseBit)
 
 data Side a = Side { cut1, cut2, cut3, cut4, cut5 :: a }
     deriving (Read, Show, Eq, Ord, Functor, Foldable, Traversable, Generic, Generic1, Equatable)
@@ -57,6 +58,9 @@ gapStick :: Boolean a => Stick a
 gapStick = Stick s s s s
     where
         s = Side false true true true false
+
+solidStick :: Boolean a => Stick a
+solidStick = pure false
 
 turnLeft :: Stick a -> Stick a
 turnLeft (Stick x y z w) = Stick w x y z
