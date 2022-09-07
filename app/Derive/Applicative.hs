@@ -1,5 +1,5 @@
 {-# Language UndecidableInstances, FlexibleInstances, FlexibleContexts #-}
-module GenericApplicative where
+module Derive.Applicative where
 
 import GHC.Generics
 

@@ -1,5 +1,5 @@
 {-# Language FlexibleContexts, FlexibleInstances, MultiParamTypeClasses #-}
-module GenericEach (genericEach) where
+module Derive.Each (genericEach) where
 
 import Control.Lens (Traversal, confusing)
 import GHC.Generics

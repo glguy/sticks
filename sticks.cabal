@@ -20,14 +20,14 @@ executable sticks
         AutomaticSolve
         Block
         ChooseBit
-        GenericApplicative
-        GenericEach
+        Derive.Applicative
+        Derive.Each
+        Derive.Codec
         ManualSolve
         PQueue
         Queue
         Search
         Select
-        TraversableCodec
 
     -- things that we shouldn't ever need to specify
     default-extensions:

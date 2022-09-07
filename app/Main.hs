@@ -16,6 +16,7 @@ import Prelude hiding ((||), not, any, and, all, (&&))
 import Control.Lens (toListOf, each)
 import Data.Foldable (for_)
 import Ersatz
+import Data.Map qualified as Map
 
 import Block (Block(..), Stick(..), Side(..))
 import ManualSolve (manualSolve)
@@ -58,13 +59,13 @@ block0 = Block
     x = false
 
 main :: IO ()
-main = go [] []
+main = go [] Map.empty
     where
     go seen partials =
      do res <- solveWith cryptominisat5
          do (a,b,c) <- fullsolve block0
-            assert (all (c /==) seen)
-            assert (all (c:b /==) partials)
+            assert (all (c /==) (map encode seen))
+            assert (all (\(sol,stepss) -> c === encode sol ==> all (b /==) (map encode stepss)) (Map.assocs partials))
             pure (a,b,c)
         case res of
             (Satisfied, Just (order,steps,sol))
@@ -73,8 +74,8 @@ main = go [] []
                  do putStrLn "# top.. left. bottm right"
                     for_ order \i ->
                         putStrLn (show (i+1) ++ " " ++ showStick (sticks !! fromInteger i))
-                    go (encode sol : seen) []
-              | otherwise -> go seen (map encode (sol:steps):partials)
+                    go (sol : seen) (Map.delete sol partials)
+              | otherwise -> go seen (Map.insertWith (++) sol [steps] partials)
             (Unsatisfied, _) -> pure ()
             _ -> fail "what the what?"
 

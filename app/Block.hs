@@ -2,13 +2,13 @@
 module Block where
 
 import Prelude hiding ((||), and)
-import Ersatz
-import TraversableCodec ( TraversableCodec(..) )
-import GenericApplicative ( GenericApplicative(..) )
-import GHC.Generics ( Generic, Generic1 )
 import ChooseBit ( GenericChooseBit(..), ChooseBit )
 import Control.Lens ( over, Each(each) )
-import GenericEach ( genericEach )
+import Derive.Applicative (GenericApplicative(..))
+import Derive.Codec ( TraversableCodec(..) )
+import Derive.Each ( genericEach )
+import Ersatz
+import GHC.Generics ( Generic, Generic1 )
 
 data Side a = Side { cut1, cut2, cut3, cut4, cut5 :: a }
     deriving (Read, Show, Eq, Ord, Functor, Foldable, Traversable, Generic, Generic1, Equatable)
