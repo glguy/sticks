@@ -49,4 +49,3 @@ executable sticks
         containers,
         ersatz,
         lens,
-        mtl,
