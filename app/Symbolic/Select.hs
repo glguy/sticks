@@ -19,8 +19,8 @@ import Prelude hiding (any, and, or, (&&), (||) ,not)
 import Symbolic.ChooseBit (ChooseBit(chooseBit))
 
 -- | A set of choices and an index of the chosen element of that set
-data Select a = Selected a | Choice (Select a) (Select a) Bit
-  deriving (Show, Functor, Foldable, Traversable)
+data Select a = Selected a | Choose (Select a) (Select a) Bit
+    deriving (Show, Functor, Foldable, Traversable)
 
 -- | Symbolic selection from a non-empty list of alternatives.
 selectList :: MonadSAT s m => [a] -> m (Select a)
@@ -33,62 +33,62 @@ select :: MonadSAT s m => NonEmpty a -> m (Select a)
 select = mergeSelects . fmap Selected
 
 mergeSelects :: MonadSAT s m => NonEmpty (Select a) -> m (Select a)
-mergeSelects (x  :| [])      = return x
-mergeSelects (x1 :| x2 : xs) =
-  do b   <- exists
-     xs' <- reduce xs
-     mergeSelects (Choice x1 x2 b :| xs')
+mergeSelects (x :| xs) =
+    case xs of
+        []   -> pure x
+        y:ys -> 
+         do b  <- exists
+            zs <- reduce ys
+            mergeSelects (Choose x y b :| zs)
 
 reduce :: MonadSAT s m => [Select a] -> m [Select a]
 reduce (x1:x2:xs) =
-     do b   <- exists
-        xs' <- reduce xs
-        return (Choice x1 x2 b : xs')
-reduce xs = return xs
+ do b   <- exists
+    xs' <- reduce xs
+    pure (Choose x1 x2 b : xs')
+reduce xs = pure xs
 
 runSelect :: ChooseBit a => Select a -> a
-runSelect (Selected x) = x
-runSelect (Choice x y b) = chooseBit (runSelect x) (runSelect y) b
+runSelect = \case
+    Selected x -> x
+    Choose x y b -> chooseBit (runSelect x) (runSelect y) b
 
 instance Codec (Select a) where
-
-  type Decoded (Select a) = a
-
-  encode = Selected
-
-  decode _ (Selected x) = return x
-  decode sol (Choice x y b) =
-    do b' <- decode sol b
-       decode sol (if b' then y else x)
+    type Decoded (Select a) = a
+    encode = Selected
+    decode sol = \case
+        Selected x -> pure x
+        Choose x y b ->
+         do b' <- decode sol b
+            decode sol if b' then y else x
 
 instance Applicative Select where
-  pure = Selected
-  (<*>) = ap
+    pure = Selected
+    (<*>) = ap
 
 instance Monad Select where
-  Selected x   >>= f = f x
-  Choice x y b >>= f = Choice (x >>= f) (y >>= f) b
+    Selected x   >>= f = f x
+    Choose x y b >>= f = Choose (x >>= f) (y >>= f) b
 
 instance ChooseBit (Select a) where
-  chooseBit = Choice
+    chooseBit = Choose
 
 instance Eq a => Equatable (Select a) where
-  x === y = runSelect (liftA2 (\x' y' -> bool (x' == y')) x y)
+    x === y = runSelect (liftA2 (\x' y' -> bool (x' == y')) x y)
 
 instance Ord a => Orderable (Select a) where
-  x <? y = runSelect (liftA2 (\x' y' -> bool (x' < y')) x y)
+    x <? y = runSelect (liftA2 (\x' y' -> bool (x' < y')) x y)
 
 selectPermutation :: MonadSAT s m => [a] -> m [Select a]
 selectPermutation xs = selectPermutationN (length xs) xs
 
 selectPermutationN :: MonadSAT s m => Int -> [a] -> m [Select a]
 selectPermutationN n xs
-  | n < 0 || length xs < n = error "selectPermutationN: n out of range"
-  | otherwise =
-
-  do ys <- replicateM n (selectList xs)
-     assert (unsafeUniqueSelects ys)
-     return ys
+    | n < 0 || length xs < n = error "selectPermutationN: n out of range"
+    | otherwise =
+     do ys <- replicateM n (selectList xs)
+        assert (unsafeUniqueSelects ys)
+        pure ys
 
 -- | This function is only intended to be used to two Select
 -- values that were constructed in the exact same fashion.
@@ -96,11 +96,9 @@ selectPermutationN n xs
 -- actual values.
 unsafeUniqueSelects :: [Select a] -> Bit
 unsafeUniqueSelects ys =
-  nor [ sameSelect y z
-      | y:zs <- tails ys
-      , z    <- zs ]
-  where
-    sameSelect (Choice f1 t1 b1) (Choice f2 t2 b2) =
-          not b1 && not b2 && sameSelect f1 f2 ||
-              b1 &&     b2 && sameSelect t1 t2
+    nor [ sameSelect y z | y:zs <- tails ys, z <- zs ]
+    where
+    sameSelect (Choose f1 t1 b1) (Choose f2 t2 b2) =
+        not b1 && not b2 && sameSelect f1 f2 ||
+            b1 &&     b2 && sameSelect t1 t2
     sameSelect _ _ = true

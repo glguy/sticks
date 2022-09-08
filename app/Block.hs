@@ -1,8 +1,8 @@
-{-# Language MultiParamTypeClasses, UndecidableInstances #-}
+{-# Language MultiParamTypeClasses, FlexibleContexts, UndecidableInstances #-}
 module Block where
 
 import Prelude hiding ((||), and)
-import Control.Lens (over, Each(each) )
+import Control.Lens
 import Ersatz
 import GHC.Generics (Generic, Generic1)
 
@@ -29,16 +29,16 @@ data Block a = Block { stick1, stick2, stick3, stick4, stick5, stick6 :: Stick a
     deriving Codec       via TraversableCodec   Block a
     deriving Applicative via GenericApplicative Block
 
-instance Each (Stick a) (Stick b) (Side a) (Side b) where
-    each = genericEach
-    {-# Inline each #-}
+sticks :: Indexable Int p => Applicative f => Over p f (Block a) (Block b) (Stick a) (Stick b)
+sticks = conjoined genericEach (indexing genericEach)
+{-# INLINE sticks #-}
 
-instance Each (Block a) (Block b) (Stick a) (Stick b) where
-    each = genericEach
-    {-# Inline each #-}
+sides :: Traversal (Stick a) (Stick b) (Side a) (Side b)
+sides = genericEach
+{-# INLINE sides #-}
 
 shifts :: Boolean a => Stick a -> [Stick a]
-shifts s = [s, over each shiftl s, over each shiftr s]
+shifts s = [s, over sides shiftl s, over sides shiftr s]
 
 shiftl :: Boolean a => Side a -> Side a
 shiftl (Side _ a b c d) = Side a b c d false

@@ -1,7 +1,7 @@
 module AutomaticSolve where
 
 import Prelude hiding (all)
-import Control.Lens (indexing, iover, dropping, partsOf, each)
+import Control.Lens (iover, dropping, partsOf)
 import Control.Monad ((<=<))
 import Data.Traversable (for)
 import Ersatz (assert, Bit, Bits, (===), MonadSAT)
@@ -29,24 +29,27 @@ fullsolve start =
     -- the first location unflipped.
     final <-
         transformBlock start $
-        dropping 1 each (selectList' flips) <=<
-        partsOf (dropping 1 each) selectPermutation' <=<
-        each (selectList' turns)
+        dropping 1 sticks (selectList' flips) <=<
+        partsOf (dropping 1 sticks) selectPermutation' <=<
+        sticks (selectList' turns)
 
-    order <- selectPermutation' [0,1,2,3,4,5 :: Bits]
+    order <- selectPermutation' [0,1,2,3,4,5]
 
     -- generate the sequence of adding in sticks one-by-one
-    let steps_ = scanr (setStick gapStick) final order
+    -- each element in this sequence has an index of an open
+    -- location and all the previously placed sticks
+    let steps_ :: [(Bits, Block Bit)]
+        steps_ = zip order (scanr (setStick gapStick) final order)
 
     -- check that at each step the block can be shifted into a state where the next stick can be inserted
-    steps <- for (zip order steps_) \(i,step) ->
+    steps <- for steps_ \(i, step) ->
         setStick gapStick i <$>
         transformBlock
             (setStick solidStick i step)
-            (each (selectList' (turns <=< shifts)))
+            (sticks (selectList' (turns <=< shifts)))
 
     pure (order, steps, final)
 
 -- | Insert the stick into the block at the zero-based index.
 setStick :: Stick Bit -> Bits {- ^ index -} -> Block Bit -> Block Bit
-setStick x i = iover (indexing each) \j y -> chooseBit y x (i === fromIntegral j)
+setStick x i = iover sticks \j y -> chooseBit y x (i === fromIntegral j)
