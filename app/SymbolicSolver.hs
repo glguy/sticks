@@ -1,4 +1,4 @@
-module AutomaticSolve where
+module SymbolicSolver (candidateExists) where
 
 import Prelude hiding (all)
 import Control.Lens (iover, dropping, partsOf)
@@ -16,22 +16,16 @@ selectPermutation' xs = map runSelect <$> selectPermutation xs
 selectList' :: MonadSAT s m => ChooseBit b => (a -> [b]) -> a -> m b
 selectList' f x = runSelect <$> selectList (f x)
 
-transformBlock :: MonadSAT s m => Block Bit -> (Block Bit -> m (Block Bit)) -> m (Block Bit)
-transformBlock b f =
- do b' <- f b
-    assert (checkBlock b')
-    pure b'
-
-fullsolve :: MonadSAT s m => Block Bit -> m ([Bits], [Block Bit], Block Bit)
-fullsolve start =
+candidateExists :: MonadSAT s m => Block Bit -> m ([Bits], [Block Bit], Block Bit)
+candidateExists start =
  do -- Permute, flip, and spin the sticks into their final locations.
     -- To reduce useless symmetries, the first stick is locked into
     -- the first location unflipped.
     final <-
-        transformBlock start $
-        dropping 1 sticks (selectList' flips) <=<
-        partsOf (dropping 1 sticks) selectPermutation' <=<
-        sticks (selectList' turns)
+        dropping 1 sticks (selectList' flips) =<<
+        partsOf (dropping 1 sticks) selectPermutation' =<<
+        sticks (selectList' turns) start
+    assert (checkBlock final)
 
     order <- selectPermutation' [0,1,2,3,4,5]
 
@@ -43,10 +37,11 @@ fullsolve start =
 
     -- check that at each step the block can be shifted into a state where the next stick can be inserted
     steps <- for steps_ \(i, step) ->
-        setStick gapStick i <$>
-        transformBlock
+     do x <- sticks
+            (selectList' (turns <=< shifts))
             (setStick solidStick i step)
-            (sticks (selectList' (turns <=< shifts)))
+        assert (checkBlock x)
+        pure (setStick gapStick i x)
 
     pure (order, steps, final)
 

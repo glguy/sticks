@@ -1,5 +1,5 @@
 {-# Language TypeFamilies #-}
-module Derive.Codec where
+module Derive.Codec (TraversableCodec(..)) where
 
 import Ersatz (Codec(..))
 

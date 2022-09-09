@@ -20,8 +20,8 @@ import Data.Map (Map)
 import Data.Map qualified as Map
 
 import Block (Block(..), Stick(..), Side(..), sticks, sides)
-import ManualSolve (pathCheck)
-import AutomaticSolve (fullsolve)
+import SymbolicSolver (candidateExists)
+import PathSolver (pathSolver)
 
 block0 :: Boolean a => Block a
 block0 = Block
@@ -44,7 +44,7 @@ solver ::
     IO ()
 solver seen =
  do res <- solveWith cryptominisat5
-     do (a,b,c) <- fullsolve block0
+     do (a,b,c) <- candidateExists block0
         ifor_ seen \sol stepss ->
             assert
                 if null stepss
@@ -55,7 +55,7 @@ solver seen =
     case res of
         (Satisfied, Just (order,steps,sol))
             | let order' = map fromInteger order
-            , pathCheck order' (steps++[sol]) ->                
+            , pathSolver order' (steps++[sol]) ->                
              do printSolution order' sol
                 solver (Map.insert sol [] seen)
 

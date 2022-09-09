@@ -1,4 +1,4 @@
-module ManualSolve (pathCheck) where
+module PathSolver (pathSolver) where
 
 import Control.Lens
 import Control.Comonad.Store ( ComonadStore(experiment) )
@@ -6,11 +6,11 @@ import Control.Comonad.Store ( ComonadStore(experiment) )
 import Block
 import Searching.Search (bfs)
 
-pathCheck ::
+pathSolver ::
     [Int] {- ^ order of insertion -} ->
     [Block Bool] {- ^ SAT solver route -} ->
     Bool {- ^ route is valid -}
-pathCheck order steps =
+pathSolver order steps =
     go order steps
     where
         setAt i = set (sticks . index i)

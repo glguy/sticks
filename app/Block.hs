@@ -1,4 +1,4 @@
-{-# Language MultiParamTypeClasses, FlexibleContexts, UndecidableInstances #-}
+{-# Language UndecidableInstances #-}
 module Block where
 
 import Prelude hiding ((||), and)
@@ -29,7 +29,9 @@ data Block a = Block { stick1, stick2, stick3, stick4, stick5, stick6 :: Stick a
     deriving Codec       via TraversableCodec   Block a
     deriving Applicative via GenericApplicative Block
 
-sticks :: Indexable Int p => Applicative f => Over p f (Block a) (Block b) (Stick a) (Stick b)
+sticks ::
+    Indexable Int p => Applicative f =>
+    Over p f (Block a) (Block b) (Stick a) (Stick b)
 sticks = conjoined genericEach (indexing genericEach)
 {-# INLINE sticks #-}
 

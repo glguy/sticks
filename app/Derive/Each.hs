@@ -1,4 +1,3 @@
-{-# Language FlexibleContexts, FlexibleInstances, MultiParamTypeClasses #-}
 module Derive.Each (genericEach) where
 
 import Control.Lens (Traversal, confusing)

@@ -17,12 +17,12 @@ executable sticks
     default-language: Haskell2010
 
     other-modules:
-        AutomaticSolve
         Block
+        SymbolicSolver
+        PathSolver
         Derive.Applicative
         Derive.Codec
         Derive.Each
-        ManualSolve
         Searching.PQueue
         Searching.Queue
         Searching.Search
@@ -38,8 +38,11 @@ executable sticks
         DeriveTraversable
         DerivingVia
         EmptyCase
+        FlexibleContexts
+        FlexibleInstances
         ImportQualifiedPost
         LambdaCase
+        MultiParamTypeClasses
         StandaloneDeriving
         TypeOperators
 
