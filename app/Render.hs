@@ -6,8 +6,8 @@ renderBlock :: Block Bool -> String
 renderBlock (Block x1 x2 x3 x4 x5 x6) =
     renderStick x1 "translate <-1,0,0>\n" ++
     renderStick x2 "translate < 1,0,0>\n" ++
-    renderStick x3 "rotate <90, 180, 0>\ntranslate < 0,1,0>\n" ++
-    renderStick x4 "rotate <90, 180, 0>\ntranslate < 0,-1,0>\n" ++
+    renderStick x3 "rotate <90, 0, 0>\ntranslate < 0,1,0>\n" ++
+    renderStick x4 "rotate <90, 0, 0>\ntranslate < 0,-1,0>\n" ++
     renderStick x5 "rotate <90, 90, 0>\ntranslate <0,0,-1>\n" ++
     renderStick x6 "rotate <90, 90, 0>\ntranslate <0,0,1>\n"
 
