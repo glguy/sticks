@@ -82,15 +82,15 @@ turns (Stick x y z w) =
 checkBlock :: Boolean b => Block b -> b
 checkBlock (Block s1 s2 s3 s4 s5 s6) =
     and
-    [ cut2 (right  s1) || cut3 (left   s3)
+    [ cut2 (right  s1) || cut3 (right  s3)
     , cut3 (top    s1) || cut4 (left   s5)
     , cut3 (bottom s1) || cut4 (right  s6)
-    , cut4 (right  s1) || cut3 (left   s4)
+    , cut4 (right  s1) || cut3 (right  s4)
 
-    , cut2 (left   s2) || cut3 (right  s3)
+    , cut2 (left   s2) || cut3 (left   s3)
     , cut3 (top    s2) || cut2 (left   s5)
     , cut3 (bottom s2) || cut2 (right  s6)
-    , cut4 (left   s2) || cut3 (right  s4)
+    , cut4 (left   s2) || cut3 (left   s4)
 
     , cut2 (bottom s3) || cut3 (top    s5)
     , cut4 (bottom s3) || cut3 (top    s6)

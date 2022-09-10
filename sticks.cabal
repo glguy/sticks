@@ -20,6 +20,7 @@ executable sticks
         Block
         SymbolicSolver
         PathSolver
+        Render
         Derive.Applicative
         Derive.Codec
         Derive.Each

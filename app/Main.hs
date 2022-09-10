@@ -1,7 +1,7 @@
 {-
 
-@
-  /-----/|
+@  +-----+
+  /     /|
  / 1 2 / |
 +-----+ 6|
 |  3  |5/
@@ -13,7 +13,7 @@
 module Main where
 
 import Prelude hiding ((||), not, any, and, all, (&&))
-import Control.Lens (toListOf, ifor_)
+import Control.Lens
 import Data.Foldable (for_)
 import Ersatz
 import Data.Map (Map)
@@ -22,6 +22,7 @@ import Data.Map qualified as Map
 import Block (Block(..), Stick(..), Side(..), sticks, sides)
 import SymbolicSolver (candidateExists)
 import PathSolver (pathSolver)
+import Render
 
 block0 :: Boolean a => Block a
 block0 = Block
@@ -35,8 +36,21 @@ block0 = Block
     u = true
     x = false
 
+block1 :: Boolean a => Block a
+block1 = Block
+    (Stick (Side x x x x x) (Side x x x x x) (Side x x x x x) (Side x x x x x))
+    (Stick (Side x x x x x) (Side x x x x x) (Side x x x x x) (Side x x x x x))
+    (Stick (Side x x x x x) (Side x x x x x) (Side x x x x x) (Side x x x x x))
+    (Stick (Side x x x x x) (Side x x x x x) (Side x x x x x) (Side x x x x x))
+    (Stick (Side x x x x x) (Side x x x x x) (Side x x x x x) (Side u x x x x))
+    (Stick (Side x x x x x) (Side x x x x x) (Side x x x x x) (Side x x x x x))
+    where
+    u = true
+    x = false
+
 main :: IO ()
 main = solver Map.empty
+    
 
 -- | Print out all the solutions to the 'block0' puzzle.
 solver ::
@@ -57,7 +71,7 @@ solver seen =
             | let order' = map fromInteger order
             , pathSolver order' (steps++[sol]) ->                
              do printSolution order' sol
-                solver (Map.insert sol [] seen)
+                --solver (Map.insert sol [] seen)
 
             | otherwise -> solver (Map.insertWith (++) sol [steps] seen)
 
@@ -70,6 +84,7 @@ printSolution order sol =
     putStrLn "# top.. left. bottm right"
     for_ order \i ->
         putStrLn (show (i+1) ++ " " ++ showStick (xs !! i))
+    writeFile "solution.pov" (renderBlock sol)
 
 -----------------------------------------------------------------------
 -- simple block rendering
