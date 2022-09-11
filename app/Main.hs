@@ -14,39 +14,28 @@ module Main where
 
 import Prelude hiding ((||), not, any, and, all, (&&))
 import Control.Lens
-import Data.Foldable (for_)
+import Data.Foldable (for_, traverse_)
 import Ersatz
 import Data.Map (Map)
 import Data.Map qualified as Map
 
 import Block (Block(..), Stick(..), Side(..), sticks, sides)
 import SymbolicSolver (candidateExists)
-import PathSolver (pathSolver)
+import PathSolver ( Action(..), findPath, validate)
 import Render
 
 block0 :: Boolean a => Block a
 block0 = Block
-    (Stick (Side x u x x x) (Side x x x x x) (Side x x x x x) (Side x x x x x))
-    (Stick (Side u u x u x) (Side x u x x x) (Side x x x x x) (Side x u u x x))
-    (Stick (Side x u x x x) (Side x x x x x) (Side x u u x x) (Side x u x x x))
-    (Stick (Side u u x x x) (Side x x x x x) (Side x x x x x) (Side x u x x x))
-    (Stick (Side x u x x x) (Side x u x x x) (Side x u u x x) (Side x x x x x))
-    (Stick (Side u u x u x) (Side x u u x x) (Side x x x x x) (Side x u x x x))
+    (stick "▄▂▄▄▄" "▄▄▄▄▄" "▄▄▄▄▄" "▄▄▄▄▄")
+    (stick "▂▂▄▂▄" "▄▂▄▄▄" "▄▄▄▄▄" "▄▂▂▄▄")
+    (stick "▄▂▄▄▄" "▄▄▄▄▄" "▄▂▂▄▄" "▄▂▄▄▄")
+    (stick "▂▂▄▄▄" "▄▄▄▄▄" "▄▄▄▄▄" "▄▂▄▄▄")
+    (stick "▄▂▄▄▄" "▄▂▄▄▄" "▄▂▂▄▄" "▄▄▄▄▄")
+    (stick "▂▂▄▂▄" "▄▂▂▄▄" "▄▄▄▄▄" "▄▂▄▄▄")
     where
-    u = true
-    x = false
-
-block1 :: Boolean a => Block a
-block1 = Block
-    (Stick (Side x x x x x) (Side x x x x x) (Side x x x x x) (Side x x x x x))
-    (Stick (Side x x x x x) (Side x x x x x) (Side x x x x x) (Side x x x x x))
-    (Stick (Side x x x x x) (Side x x x x x) (Side x x x x x) (Side x x x x x))
-    (Stick (Side x x x x x) (Side x x x x x) (Side x x x x x) (Side x x x x x))
-    (Stick (Side x x x x x) (Side x x x x x) (Side x x x x x) (Side u x x x x))
-    (Stick (Side x x x x x) (Side x x x x x) (Side x x x x x) (Side x x x x x))
-    where
-    u = true
-    x = false
+    stick a b c d = Stick false true false (side a) (side b) (side c) (side d)
+    side [x,y,z,w,v] = bool.('▂'==) <$> Side x y z w v
+    side _ = error "bad side"
 
 main :: IO ()
 main = solver Map.empty
@@ -69,9 +58,15 @@ solver seen =
     case res of
         (Satisfied, Just (order,steps,sol))
             | let order' = map fromInteger order
-            , pathSolver order' (steps++[sol]) ->                
-             do printSolution order' sol
-                --solver (Map.insert sol [] seen)
+            , Just path <- findPath order' (steps++[sol]) ->                
+             do printPath path
+                putStrLn $ "length: " ++ show (length path)
+                putStrLn ""
+
+                if length path == 15 then
+                   do ifor_ (validate path) \i b -> writeFile ("step" ++ show i ++ ".pov") (renderBlock b)
+                      printSolution order' sol
+                else solver (Map.insert sol [] seen)
 
             | otherwise -> solver (Map.insertWith (++) sol [steps] seen)
 
@@ -85,6 +80,17 @@ printSolution order sol =
     for_ order \i ->
         putStrLn (show (i+1) ++ " " ++ showStick (xs !! i))
     writeFile "solution.pov" (renderBlock sol)
+
+printPath :: [(Int, Action)] -> IO ()
+printPath = traverse_ \(i, a) ->
+    putStrLn $
+    show i <> ": " <>
+    case a of
+        ActUp       -> "slide up"
+        ActDown     -> "slide down"
+        ActLeft     -> "turn left"
+        ActRight    -> "turn right"
+        ActInsert s -> showStick s
 
 -----------------------------------------------------------------------
 -- simple block rendering

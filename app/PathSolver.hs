@@ -1,33 +1,79 @@
-module PathSolver (pathSolver) where
+{-# Language PartialTypeSignatures #-}
+module PathSolver (Action(..), findPath, validate) where
 
 import Control.Lens
-import Control.Comonad.Store ( ComonadStore(experiment) )
+import Data.List (find)
+import Control.Lens.Internal.Context (Pretext(..))
+import Data.Functor.Compose
 
 import Block
-import Searching.Search (bfs)
+import Searching.Search ( bfsOn )
 
-pathSolver ::
+data Action
+    = ActUp
+    | ActDown
+    | ActLeft
+    | ActRight
+    | ActInsert (Stick Bool)
+    deriving (Read, Show, Eq, Ord)
+
+findPath ::
     [Int] {- ^ order of insertion -} ->
     [Block Bool] {- ^ SAT solver route -} ->
-    Bool {- ^ route is valid -}
-pathSolver order steps =
-    go order steps
+    Maybe [(Int,Action)] {- ^ route is valid -}
+findPath (i:ks) (x:y:zs) =
+ do let s = getAt i y
+    p1 <- findPath1 (setAt i s x) y
+    ps <- findPath ks (y:zs)
+    pure ((i,ActInsert s) : p1 <> ps)
+findPath _ _ = Just []
+
+findPath1 :: Block Bool -> Block Bool -> Maybe [(Int, Action)]
+findPath1 src tgt =
+    fmap (reverse . snd) $
+    find ((tgt==) . fst) $
+    bfsOn fst (\(b,xs) -> map (fmap (:xs)) (next b)) (src, [])
+
+setAt :: Int -> Stick b -> Block b -> Block b
+setAt i = set (sticks . index i)
+
+getAt :: Int -> Block a -> Stick a
+getAt i = (^?! sticks . index i)
+
+next :: Block Bool -> [(Block Bool, (Int, Action))]
+next b =
+    [ (b',a)
+        | h <- holesOf sticks b
+        , (a,b') <- (getCompose . runPretext h . rmap Compose) (Indexed editStick)
+        , checkBlock b'
+    ]
+
+editStick :: Int -> Stick Bool -> [((Int, Action), Stick Bool)]
+editStick i s =
+    [((i,ActUp  ), t) | t <- slideUp s] <>
+    [((i,ActDown), t) | t <- slideDown s] <>
+    [((i,ActLeft),turnLeft s),
+        ((i,ActRight),turnRight s)]
+
+slideUp :: Stick Bool -> [Stick Bool]
+slideUp (Stick lo mi hi x y z w) = [Stick False lo mi x y z w | not hi]
+
+slideDown :: Stick Bool -> [Stick Bool]
+slideDown (Stick lo mi hi x y z w) = [Stick mi hi False x y z w | not lo]
+
+validate :: [(Int,Action)] -> [Block Bool]
+validate = scanl go (pure True)
     where
-        setAt i = set (sticks . index i)
-        getAt i = (^?! sticks . index i)
+        go b (i,a) = over (sticks . index i) (run a) b
 
-        -- replaces the extra gaps in the stages and copies over the inserted stick
-        go (i:ks) (x:y:zs) = pathExists x' y && go ks (y:zs)
-            where
-                x' = setAt i (getAt i y) x
-        go _ _ = True
+        run ActDown       = shiftDown
+        run ActUp         = shiftUp
+        run ActLeft       = turnLeft
+        run ActRight      = turnRight
+        run (ActInsert s) = const s
 
-pathExists :: Block Bool -> Block Bool -> Bool
-pathExists src tgt = tgt `elem` bfs blockStep src
+shiftUp :: Stick Bool -> Stick Bool
+shiftUp (Stick a b c x y z w) | c = undefined | otherwise = Stick False a b x y z w
 
-blockStep :: Block Bool -> [Block Bool]
-blockStep b = filter checkBlock (experiment editStick =<< holesOf (traverseOf sticks) b)
-    where
-        editStick s = slider s ++ slidel s ++ [turnLeft s, turnRight s]
-        slider = sides \(Side x y z w v) -> [Side False x y z w | not v]
-        slidel = sides \(Side x y z w v) -> [Side y z w v False | not x]
+shiftDown :: Stick Bool -> Stick Bool
+shiftDown (Stick a b c x y z w) | a = undefined | otherwise = Stick b c False x y z w

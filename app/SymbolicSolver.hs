@@ -1,6 +1,6 @@
 module SymbolicSolver (candidateExists) where
 
-import Prelude hiding (all)
+import Prelude hiding (all, (||), (&&))
 import Control.Lens (iover, dropping, partsOf)
 import Control.Monad ((<=<))
 import Data.Traversable (for)
@@ -33,15 +33,13 @@ candidateExists start =
     -- each element in this sequence has an index of an open
     -- location and all the previously placed sticks
     let steps_ :: [(Bits, Block Bit)]
-        steps_ = zip order (scanr (setStick gapStick) final order)
+        steps_ = zip order (scanr (setStick noStick) final order)
 
     -- check that at each step the block can be shifted into a state where the next stick can be inserted
     steps <- for steps_ \(i, step) ->
-     do x <- sticks
-            (selectList' (turns <=< shifts))
-            (setStick solidStick i step)
-        assert (checkBlock x)
-        pure (setStick gapStick i x)
+     do x <- sticks (selectList' (turns <=< shifts)) step
+        assert (checkBlock (setStick solidStick i x))
+        pure (setStick noStick i x)
 
     pure (order, steps, final)
 

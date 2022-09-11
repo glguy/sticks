@@ -49,7 +49,6 @@ executable sticks
 
     build-depends:
         base,
-        comonad,
         containers,
         ersatz,
         lens,

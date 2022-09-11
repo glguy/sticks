@@ -12,20 +12,29 @@ renderBlock (Block x1 x2 x3 x4 x5 x6) =
     renderStick x6 "rotate <90, 90, 0>\ntranslate <0,0,1>\n"
 
 renderStick :: Stick Bool -> String -> String
-renderStick (Stick f l b r) tx =
-        "difference {\n" ++
-        "  cylinder {\n" ++
-        "    <0, -3, 0>,\n" ++
-        "    <0,  3, 0>,\n" ++
-        "    0.4\n" ++
-        "    texture { T_Wood25 scale 1 }\n" ++
-        "  }\n" ++
-        renderSide f (-0.5) 0.5 (-0.5) (-0.5) ++
-        renderSide l (-0.5) (-0.5) (-0.5) 0.5 ++
-        renderSide b (-0.5) 0.5 0.5 0.5 ++
-        renderSide r 0.5 0.5 (-0.5) 0.5 ++
-        tx ++
-        "}\n"
+renderStick s _ | s == noStick = ""
+renderStick (Stick lo mi hi f l b r) tx =
+    "difference {\n\
+    \  cylinder {\n\
+    \    <0, -3, 0>,\n\
+    \    <0,  3, 0>,\n\
+    \    0.5\n\
+    \    texture { T_Wood25 scale 1 }\n\
+    \  }\n" ++
+    renderSide f (-cutR) cutR (-cutR) (-cutR) ++
+    renderSide l (-cutR) (-cutR) (-cutR) cutR ++
+    renderSide b (-cutR) cutR cutR cutR ++
+    renderSide r cutR cutR (-cutR) cutR ++
+    shft ++
+    tx ++
+    "}\n"
+    where
+        cutR = 0.6
+        shft
+            | lo = "translate <0,-1,0>\n"
+            | mi = ""
+            | hi = "translate <0,1,0>\n"
+            | otherwise = error "renderStick: invalid stick"
 
 renderSide :: Side Bool -> Double -> Double -> Double -> Double -> String
 renderSide (Side x y z w v) x1 x2 z1 z2 =
@@ -38,9 +47,9 @@ renderSide (Side x y z w v) x1 x2 z1 z2 =
 renderCut :: Bool -> Double -> Double -> Double -> Double -> Double -> String
 renderCut False _ _ _ _ _ = ""
 renderCut True x1 x2 y z1 z2 =
-    "  cylinder {\n" ++
-    "    <" ++ show x1 ++ ", " ++ show y ++ ", " ++ show z1 ++ ">,\n" ++
-    "    <" ++ show x2 ++ ", " ++ show y ++ ", " ++ show z2 ++ ">,\n" ++
-    "    0.4\n" ++
-    "    texture { T_Wood24 scale 1 }\n" ++
-    "  }\n"
+    "  cylinder {\n\
+    \    <" ++ show x1 ++ ", " ++ show y ++ ", " ++ show z1 ++ ">,\n\
+    \    <" ++ show x2 ++ ", " ++ show y ++ ", " ++ show z2 ++ ">,\n\
+    \    0.5\n\
+    \    texture { T_Wood24 scale 1 }\n\
+    \  }\n"
