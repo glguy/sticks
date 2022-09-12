@@ -4,7 +4,7 @@ import Control.Lens ( index, set )
 import Text.Printf ( printf )
 
 import Block
-import PathSolver (Action(..), applyAction)
+import PathSolver (Action(..), actBlock)
 
 renderAnimation :: (Int, Action) -> Block Bool -> String
 renderAnimation (i,a) (Block x1 x2 x3 x4 x5 x6) =
@@ -92,7 +92,7 @@ animate path = go 0 path (pure True)
             \#else\n\
             \%s\
             \#end\n"
-            (t+1) t (renderAnimation (i,a) b') (go (t+1) as (applyAction (i,a) b'))
+            (t+1) t (renderAnimation (i,a) b') (go (t+1) as (actBlock i a b'))
             where
                 b' = case a of
                     ActInsert s -> set (sticks . index i) s b

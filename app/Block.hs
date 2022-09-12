@@ -1,4 +1,4 @@
-{-# Language ViewPatterns, UndecidableInstances #-}
+{-# Language RankNTypes, ViewPatterns, UndecidableInstances #-}
 module Block where
 
 import Prelude hiding ((||), (&&), and)
@@ -36,6 +36,9 @@ sticks ::
 sticks = conjoined genericEach (indexing genericEach)
 {-# INLINE sticks #-}
 
+stick :: Int -> Traversal' (Block a) (Stick a)
+stick i = sticks . index i
+
 sides :: Traversal' (Stick a) (Side a)
 sides f (Stick a b c x y z w) = Stick a b c <$> f x <*> f y <*> f z <*> f w
 {-# INLINE sides #-}
@@ -56,6 +59,12 @@ turnLeft (Stick lo mi hi x y z w) = Stick lo mi hi w x y z
 
 turnRight :: Stick a -> Stick a
 turnRight (Stick lo mi hi x y z w) = Stick lo mi hi y z w x
+
+shiftUp :: Boolean a => Stick a -> Stick a
+shiftUp (Stick a b _ x y z w) = Stick false a b x y z w
+
+shiftDown :: Boolean a => Stick a -> Stick a
+shiftDown (Stick _ b c x y z w) = Stick b c false x y z w
 
 -----------------------------------------------------------------------
 
