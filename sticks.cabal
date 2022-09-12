@@ -52,3 +52,4 @@ executable sticks
         containers,
         ersatz,
         lens,
+        transformers,

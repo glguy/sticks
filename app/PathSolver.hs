@@ -1,10 +1,11 @@
-{-# Language PartialTypeSignatures #-}
+{-# Language MonadComprehensions #-}
 module PathSolver (Action(..), findPath, simplify, actBlock) where
 
 import Control.Lens
 import Data.List (find)
 import Control.Lens.Internal.Context (Pretext(..))
-import Data.Functor.Compose
+import Control.Monad.Trans.Writer ( WriterT(..) )
+import Control.Monad.Trans.Class ( MonadTrans(lift) )
 
 import Block (Block, Stick(Stick), sticks, stick, turnLeft, turnRight, shiftUp, shiftDown, checkBlock)
 import Searching.Search ( bfsOn )
@@ -36,24 +37,27 @@ findPath _ _ = Just []
 
 findPath1 :: Block Bool -> Block Bool -> Maybe [(Int, Action)]
 findPath1 src tgt =
-    fmap (reverse . snd) $
+    fmap snd $
     find ((tgt==) . fst) $
-    bfsOn fst (\(b,xs) -> map (fmap (:xs)) (next b)) (src, [])
+    bfsOn fst (\b -> runWriterT (WriterT [b] >>= next)) (src,[])
 
-next :: Block Bool -> [(Block Bool, (Int, Action))]
+next :: Block Bool -> WriterT [(Int, Action)] [] (Block Bool)
 next b =
-    [ (b',a)
-        | h <- holesOf sticks b
-        , (a,b') <- (getCompose . runPretext h . rmap Compose) (Indexed editStick)
-        , checkBlock b'
+    [ b'
+    | h  <- lift (holesOf sticks b)
+    , b' <- irunPretext h edits
+    , checkBlock b'
     ]
 
-editStick :: Int -> Stick Bool -> [((Int, Action), Stick Bool)]
-editStick i s =
-    [((i,ActUp  ), t) | t <- slideUp s] <>
-    [((i,ActDown), t) | t <- slideDown s] <>
-    [((i,ActLeft),turnLeft s),
-     ((i,ActRight),turnRight s)]
+irunPretext :: Functor f => Pretext (Indexed i) a b t -> (i -> a -> f b) -> f t
+irunPretext h f = runPretext h (Indexed f)
+
+edits :: Int -> Stick Bool -> WriterT [(Int, Action)] [] (Stick Bool)
+edits i s = WriterT $
+    [(t,           [(i,ActUp   )]) | t <- slideUp   s] <>
+    [(t,           [(i,ActDown )]) | t <- slideDown s] <>
+    [(turnLeft  s, [(i,ActLeft )]),
+     (turnRight s, [(i,ActRight)])]
 
 slideUp :: Stick Bool -> [Stick Bool]
 slideUp (Stick lo mi hi x y z w) = [Stick False lo mi x y z w | not hi]
