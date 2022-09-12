@@ -14,14 +14,15 @@ module Main where
 
 import Prelude hiding ((||), not, any, and, all, (&&))
 import Control.Lens
-import Data.Foldable (for_, traverse_)
+import Data.Foldable (traverse_)
 import Ersatz
 import Data.Map (Map)
 import Data.Map qualified as Map
+import Text.Printf
 
-import Block (Block(..), Stick(..), Side(..), sticks, sides)
+import Block (Block(..), Stick(..), Side(..), sides)
 import SymbolicSolver (candidateExists)
-import PathSolver ( Action(..), findPath, validate)
+import PathSolver ( Action(..), findPath, simplify)
 import Render
 
 block0 :: Boolean a => Block a
@@ -58,33 +59,22 @@ solver seen =
     case res of
         (Satisfied, Just (order,steps,sol))
             | let order' = map fromInteger order
-            , Just path <- findPath order' (steps++[sol]) ->                
-             do printPath path
-                putStrLn $ "length: " ++ show (length path)
-                putStrLn ""
-
+            , Just path <- simplify <$> findPath order' (steps++[sol]) ->
+             do printf "length: %d\n" (length path)
                 if length path == 15 then
-                   do ifor_ (validate path) \i b -> writeFile ("step" ++ show i ++ ".pov") (renderBlock b)
-                      printSolution order' sol
-                else solver (Map.insert sol [] seen)
+                   do printPath path
+                      writeFile "animation.pov" (animate path)
+                else pure ()
+                solver (Map.insert sol [] seen)
 
             | otherwise -> solver (Map.insertWith (++) sol [steps] seen)
 
         (Unsatisfied, _) -> pure ()
         _ -> fail "what the what?"
 
-printSolution :: [Int] -> Block Bool -> IO ()
-printSolution order sol =
- do let xs = toListOf sticks sol
-    putStrLn "# top.. left. bottm right"
-    for_ order \i ->
-        putStrLn (show (i+1) ++ " " ++ showStick (xs !! i))
-    writeFile "solution.pov" (renderBlock sol)
-
 printPath :: [(Int, Action)] -> IO ()
 printPath = traverse_ \(i, a) ->
-    putStrLn $
-    show i <> ": " <>
+    printf "%d: %s\n" (i+1)
     case a of
         ActUp       -> "slide up"
         ActDown     -> "slide down"

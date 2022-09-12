@@ -1,5 +1,5 @@
 {-# Language PartialTypeSignatures #-}
-module PathSolver (Action(..), findPath, validate) where
+module PathSolver (Action(..), findPath, simplify, applyAction) where
 
 import Control.Lens
 import Data.List (find)
@@ -16,6 +16,14 @@ data Action
     | ActRight
     | ActInsert (Stick Bool)
     deriving (Read, Show, Eq, Ord)
+
+simplify :: [(Int,Action)] -> [(Int,Action)]
+simplify ((i, ActInsert s):(j, ActLeft ):as) | i==j = simplify ((i, ActInsert (turnLeft  s)):as)
+simplify ((i, ActInsert s):(j, ActRight):as) | i==j = simplify ((i, ActInsert (turnRight s)):as)
+simplify ((i, ActInsert s):(j, ActUp   ):as) | i==j = simplify ((i, ActInsert (shiftUp   s)):as)
+simplify ((i, ActInsert s):(j, ActDown ):as) | i==j = simplify ((i, ActInsert (shiftDown s)):as)
+simplify (x:xs) = x : simplify xs
+simplify [] = []
 
 findPath ::
     [Int] {- ^ order of insertion -} ->
@@ -53,7 +61,7 @@ editStick i s =
     [((i,ActUp  ), t) | t <- slideUp s] <>
     [((i,ActDown), t) | t <- slideDown s] <>
     [((i,ActLeft),turnLeft s),
-        ((i,ActRight),turnRight s)]
+     ((i,ActRight),turnRight s)]
 
 slideUp :: Stick Bool -> [Stick Bool]
 slideUp (Stick lo mi hi x y z w) = [Stick False lo mi x y z w | not hi]
@@ -61,16 +69,15 @@ slideUp (Stick lo mi hi x y z w) = [Stick False lo mi x y z w | not hi]
 slideDown :: Stick Bool -> [Stick Bool]
 slideDown (Stick lo mi hi x y z w) = [Stick mi hi False x y z w | not lo]
 
-validate :: [(Int,Action)] -> [Block Bool]
-validate = scanl go (pure True)
+applyAction :: (Int, Action) -> Block Bool -> Block Bool
+applyAction (i,a) b = over (sticks . index i) act b
     where
-        go b (i,a) = over (sticks . index i) (run a) b
-
-        run ActDown       = shiftDown
-        run ActUp         = shiftUp
-        run ActLeft       = turnLeft
-        run ActRight      = turnRight
-        run (ActInsert s) = const s
+        act = case a of
+            ActDown     -> shiftDown
+            ActUp       -> shiftUp
+            ActLeft     -> turnLeft
+            ActRight    -> turnRight
+            ActInsert s -> const s
 
 shiftUp :: Stick Bool -> Stick Bool
 shiftUp (Stick a b c x y z w) | c = undefined | otherwise = Stick False a b x y z w
