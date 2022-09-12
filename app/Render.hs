@@ -22,7 +22,7 @@ renderAnimation (i,a) (Block x1 x2 x3 x4 x5 x6) =
                     ActRight    -> "rotate <0, -90*Cl, 0>\n"
                     ActUp       -> "translate <0, Cl, 0>\n"
                     ActDown     -> "translate <0, -Cl, 0>\n"
-                    ActInsert{} -> "translate <0, 7*(Cl-1), 0>\n"
+                    ActInsert{} -> "translate <0, 8*(1-Cl), 0>\n"
             | otherwise = ""
 
 renderBlock :: Block Bool -> String
