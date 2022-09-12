@@ -61,11 +61,12 @@ solver seen =
             | let order' = map fromInteger order
             , Just path <- simplify <$> findPath order' (steps++[sol]) ->
              do printf "length: %d\n" (length path)
-                if length path == 15 then
+                if length path <= 10 then
                    do printPath path
                       writeFile "animation.pov" (animate path)
-                else pure ()
-                solver (Map.insert sol [] seen)
+                      solver (Map.insertWith (++) sol [steps] seen)
+                else 
+                    solver (Map.insert sol [steps] seen)
 
             | otherwise -> solver (Map.insertWith (++) sol [steps] seen)
 

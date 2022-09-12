@@ -35,9 +35,10 @@ candidateExists start =
     let steps_ :: [(Bits, Block Bit)]
         steps_ = zip order (scanr (setStick noStick) final order)
 
-    -- check that at each step the block can be shifted into a state where the next stick can be inserted
+    -- check that at each step the block can be shifted into
+    -- a state where the next stick can be inserted
     steps <- for steps_ \(i, step) ->
-     do x <- sticks (selectList' (turns <=< shifts)) step
+     do x <- sticks (selectList' shifts) step
         assert (checkBlock (setStick solidStick i x))
         pure (setStick noStick i x)
 

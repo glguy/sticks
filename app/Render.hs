@@ -8,12 +8,12 @@ import PathSolver (Action(..), actBlock)
 
 renderAnimation :: (Int, Action) -> Block Bool -> String
 renderAnimation (i,a) (Block x1 x2 x3 x4 x5 x6) =
-    renderStick x1 (f 0 ++ "translate <-1,0,0>\n") ++
-    renderStick x2 (f 1 ++ "translate < 1,0,0>\n") ++
-    renderStick x3 (f 2 ++ "rotate <90, 0, 0>\ntranslate < 0,1,0>\n") ++
-    renderStick x4 (f 3 ++ "rotate <90, 0, 0>\ntranslate < 0,-1,0>\n") ++
-    renderStick x5 (f 4 ++ "rotate <90, 90, 0>\ntranslate <0,0,-1>\n") ++
-    renderStick x6 (f 5 ++ "rotate <90, 90, 0>\ntranslate <0,0,1>\n")
+    renderStick (i==0) x1 (f 0 ++ "translate <-1,0,0>\n") ++
+    renderStick (i==1) x2 (f 1 ++ "translate < 1,0,0>\n") ++
+    renderStick (i==2) x3 (f 2 ++ "rotate <90, 0, 0>\ntranslate < 0,1,0>\n") ++
+    renderStick (i==3) x4 (f 3 ++ "rotate <90, 0, 0>\ntranslate < 0,-1,0>\n") ++
+    renderStick (i==4) x5 (f 4 ++ "rotate <90, 90, 0>\ntranslate <0,0,-1>\n") ++
+    renderStick (i==5) x6 (f 5 ++ "rotate <90, 90, 0>\ntranslate <0,0,1>\n")
     where
         f j
             | i == j =
@@ -27,23 +27,24 @@ renderAnimation (i,a) (Block x1 x2 x3 x4 x5 x6) =
 
 renderBlock :: Block Bool -> String
 renderBlock (Block x1 x2 x3 x4 x5 x6) =
-    renderStick x1 "translate <-1,0,0>\n" ++
-    renderStick x2 "translate < 1,0,0>\n" ++
-    renderStick x3 "rotate <90, 0, 0>\ntranslate < 0,1,0>\n" ++
-    renderStick x4 "rotate <90, 0, 0>\ntranslate < 0,-1,0>\n" ++
-    renderStick x5 "rotate <90, 90, 0>\ntranslate <0,0,-1>\n" ++
-    renderStick x6 "rotate <90, 90, 0>\ntranslate <0,0,1>\n"
+    renderStick False x1 "translate <-1,0,0>\n" ++
+    renderStick False x2 "translate < 1,0,0>\n" ++
+    renderStick False x3 "rotate <90, 0, 0>\ntranslate < 0,1,0>\n" ++
+    renderStick False x4 "rotate <90, 0, 0>\ntranslate < 0,-1,0>\n" ++
+    renderStick False x5 "rotate <90, 90, 0>\ntranslate <0,0,-1>\n" ++
+    renderStick False x6 "rotate <90, 90, 0>\ntranslate <0,0,1>\n"
 
-renderStick :: Stick Bool -> String -> String
-renderStick s _ | s == noStick = ""
-renderStick (Stick lo mi hi f l b r) tx =
+renderStick :: Bool -> Stick Bool -> String -> String
+renderStick _ s _ | s == noStick = ""
+renderStick hilite (Stick lo mi hi f l b r) tx =
     "difference {\n\
     \  cylinder {\n\
     \    <0, -4.5, 0>,\n\
     \    <0,  4.5, 0>,\n\
     \    0.5\n\
-    \    texture { T_Wood25 scale 1 }\n\
-    \  }\n" ++
+    \    texture { T_Wood25 scale 1 }\n" ++
+    (if hilite then "pigment { rgbf <1,1,1,0.5> }\n" else "") ++
+    "  }\n" ++
     renderSide f (-cutR) cutR (-cutR) (-cutR) ++
     renderSide l (-cutR) (-cutR) (-cutR) cutR ++
     renderSide b (-cutR) cutR cutR cutR ++
@@ -65,7 +66,22 @@ renderSide (Side x y z w v) x1 x2 z1 z2 =
     renderCut y x1 x2 1 z1 z2 ++
     renderCut z x1 x2 0 z1 z2 ++
     renderCut w x1 x2 (-1) z1 z2 ++
-    renderCut v x1 x2 (-2) z1 z2
+    renderCut v x1 x2 (-2) z1 z2 ++
+    
+    renderLink x y x1 x2 2 z1 z2 ++
+    renderLink y z x1 x2 1 z1 z2 ++
+    renderLink z w x1 x2 0 z1 z2 ++
+    renderLink w v x1 x2 (-1) z1 z2
+
+renderLink :: Bool -> Bool -> Double -> Double -> Double -> Double -> Double -> String
+renderLink True True x1 x2 y z1 z2
+  | x1 == x2 =
+    printf "box { <%f, %f, %f>, <%f, %f, %f>\n\
+           \ texture { T_Wood24 scale 1 } }\n" (0.3 * x1) y z1 (1.5*x2) (y-1) z2
+  | z1 == z2 =
+    printf "box { <%f, %f, %f>, <%f, %f, %f>\n\
+           \ texture { T_Wood24 scale 1 } }\n" x1 y (0.3 * z1) x2 (y-1) (1.5*z2)
+renderLink _ _ _ _ _ _ _ = ""
 
 renderCut :: Bool -> Double -> Double -> Double -> Double -> Double -> String
 renderCut False _ _ _ _ _ = ""

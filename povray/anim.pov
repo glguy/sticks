@@ -27,10 +27,24 @@ union {
     cylinder { < 0, -1,-4>, < 0, -1, 4>, 0.6 }
     cylinder { <-4,  0,-1>, < 4,  0,-1>, 0.6 }
     cylinder { <-4,  0, 1>, < 4,  0, 1>, 0.6 }
-    material{ M_Glass2 }
+    material{
+      texture {
+          pigment { rgbf <1,1,1,1> }
+          finish {
+              ambient 0
+              diffuse 0
+              reflection 0.1
+              phong 0.3
+              phong_size 60
+          }
+      }
+      interior { ior 1.2 }
+    }
   }
 
 #include "animation.pov"
+
+rotate <0,90*clock,0>
 }
 
 light_source { <2, 4, 3> color White}
