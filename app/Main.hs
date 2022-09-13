@@ -1,6 +1,7 @@
 {-
 
-@  +-----+
+@
+   +-----+
   /     /|
  / 1 2 / |
 +-----+ 6|
@@ -13,65 +14,55 @@
 module Main where
 
 import Prelude hiding ((||), not, any, and, all, (&&))
-import Control.Lens
-import Data.Foldable (traverse_)
-import Ersatz
-import Data.Map (Map)
-import Data.Map qualified as Map
-import Text.Printf
+import Control.Lens (toListOf)
+import Data.Maybe (mapMaybe)
+import Data.List (sortOn)
+import Data.Foldable (traverse_, for_)
+import Ersatz (Boolean, bool, true, false, encode, assert, solveWith, cryptominisat5, (/==), Result(Unsatisfied, Satisfied))
+import Text.Printf (printf)
 
-import Block (Block(..), Stick(..), Side(..), sides)
-import SymbolicSolver (candidateExists)
-import PathSolver ( Action(..), findPath, simplify)
-import Render
+import Block (sides, Block(Block), Side(..), Stick(Stick))
+import SymbolicSolver (finalExists)
+import PathSolver (Action(..), solveActions)
+import Render (animate)
 
 block0 :: Boolean a => Block a
 block0 = Block
-    (stick "▄▂▄▄▄" "▄▄▄▄▄" "▄▄▄▄▄" "▄▄▄▄▄")
-    (stick "▂▂▄▂▄" "▄▂▄▄▄" "▄▄▄▄▄" "▄▂▂▄▄")
-    (stick "▄▂▄▄▄" "▄▄▄▄▄" "▄▂▂▄▄" "▄▂▄▄▄")
-    (stick "▂▂▄▄▄" "▄▄▄▄▄" "▄▄▄▄▄" "▄▂▄▄▄")
-    (stick "▄▂▄▄▄" "▄▂▄▄▄" "▄▂▂▄▄" "▄▄▄▄▄")
-    (stick "▂▂▄▂▄" "▄▂▂▄▄" "▄▄▄▄▄" "▄▂▄▄▄")
+    (mk "▄▂▄▄▄" "▄▄▄▄▄" "▄▄▄▄▄" "▄▄▄▄▄")
+    (mk "▂▂▄▂▄" "▄▂▄▄▄" "▄▄▄▄▄" "▄▂▂▄▄")
+    (mk "▄▂▄▄▄" "▄▄▄▄▄" "▄▂▂▄▄" "▄▂▄▄▄")
+    (mk "▂▂▄▄▄" "▄▄▄▄▄" "▄▄▄▄▄" "▄▂▄▄▄")
+    (mk "▄▂▄▄▄" "▄▂▄▄▄" "▄▂▂▄▄" "▄▄▄▄▄")
+    (mk "▂▂▄▂▄" "▄▂▂▄▄" "▄▄▄▄▄" "▄▂▄▄▄")
     where
-    stick a b c d = Stick false true false (side a) (side b) (side c) (side d)
+    mk a b c d = Stick false true false (side a) (side b) (side c) (side d)
     side [x,y,z,w,v] = bool.('▂'==) <$> Side x y z w v
     side _ = error "bad side"
 
 main :: IO ()
-main = solver Map.empty
-    
+main =
+ do finals <- allFinals
+    case sortOn length (mapMaybe solveActions finals) of
+        [] -> putStrLn "No solutions"
+        p:ps ->
+         do for_ (p:ps) \x ->
+             do printf "Path length: %d\n" (length x)
+                printPath x
+                putStrLn ""
+            writeFile "animate.pov" (animate p)
 
--- | Print out all the solutions to the 'block0' puzzle.
-solver ::
-    Map (Block Bool) [[Block Bool]] {- ^ known solutions -} ->
-    IO ()
-solver seen =
- do res <- solveWith cryptominisat5
-     do (a,b,c) <- candidateExists block0
-        ifor_ seen \sol stepss ->
-            assert
-                if null stepss
-                    then c /== encode sol
-                    else c === encode sol ==> all (\x -> b /== encode x) stepss
-        pure (a,b,c)
-
-    case res of
-        (Satisfied, Just (order,steps,sol))
-            | let order' = map fromInteger order
-            , Just path <- simplify <$> findPath order' (steps++[sol]) ->
-             do printf "length: %d\n" (length path)
-                if length path <= 10 then
-                   do printPath path
-                      writeFile "animation.pov" (animate path)
-                      solver (Map.insertWith (++) sol [steps] seen)
-                else 
-                    solver (Map.insert sol [steps] seen)
-
-            | otherwise -> solver (Map.insertWith (++) sol [steps] seen)
-
-        (Unsatisfied, _) -> pure ()
-        _ -> fail "what the what?"
+allFinals :: IO [Block Bool]
+allFinals = go []
+    where
+        go seen =
+         do res <- solveWith cryptominisat5
+             do new <- finalExists block0
+                for_ seen \old -> assert (new /== encode old)
+                pure new
+            case res of
+                (Satisfied, Just b) -> go (b:seen)
+                (Unsatisfied, _) -> pure seen
+                _ -> fail "bad solver"
 
 printPath :: [(Int, Action)] -> IO ()
 printPath = traverse_ \(i, a) ->
@@ -79,8 +70,8 @@ printPath = traverse_ \(i, a) ->
     case a of
         ActUp       -> "slide up"
         ActDown     -> "slide down"
-        ActLeft     -> "turn left"
         ActRight    -> "turn right"
+        ActLeft     -> "turn left"
         ActInsert s -> showStick s
 
 -----------------------------------------------------------------------

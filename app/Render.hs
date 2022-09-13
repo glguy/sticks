@@ -1,9 +1,9 @@
 module Render (animate) where
 
-import Control.Lens ( index, set )
-import Text.Printf ( printf )
+import Control.Lens (set)
+import Text.Printf (printf)
 
-import Block
+import Block (noStick, stick, Block(Block), Side(..), Stick(Stick))
 import PathSolver (Action(..), actBlock)
 
 renderAnimation :: (Int, Action) -> Block Bool -> String
@@ -15,14 +15,13 @@ renderAnimation (i,a) (Block x1 x2 x3 x4 x5 x6) =
     renderStick (i==4) x5 (f 4 ++ "rotate <90, 90, 0>\ntranslate <0,0,-1>\n") ++
     renderStick (i==5) x6 (f 5 ++ "rotate <90, 90, 0>\ntranslate <0,0,1>\n")
     where
-        f j
-            | i == j =
-                case a of
-                    ActLeft     -> "rotate <0, 90*Cl, 0>\n"
-                    ActRight    -> "rotate <0, -90*Cl, 0>\n"
-                    ActUp       -> "translate <0, Cl, 0>\n"
-                    ActDown     -> "translate <0, -Cl, 0>\n"
-                    ActInsert{} -> "translate <0, 8*(1-Cl), 0>\n"
+        f j | i == j =
+            case a of
+                ActLeft     -> "rotate <0, 90*Cl, 0>\n"
+                ActRight    -> "rotate <0, -90*Cl, 0>\n"
+                ActUp       -> "translate <0, Cl, 0>\n"
+                ActDown     -> "translate <0, -Cl, 0>\n"
+                ActInsert{} -> "translate <0, 8*(1-Cl), 0>\n"
             | otherwise = ""
 
 renderBlock :: Block Bool -> String
@@ -111,5 +110,5 @@ animate path = go 0 path (pure True)
             (t+1) t (renderAnimation (i,a) b') (go (t+1) as (actBlock i a b'))
             where
                 b' = case a of
-                    ActInsert s -> set (sticks . index i) s b
+                    ActInsert s -> set (stick i) s b
                     _ -> b

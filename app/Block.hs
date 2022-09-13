@@ -2,8 +2,8 @@
 module Block where
 
 import Prelude hiding ((||), (&&), and)
-import Control.Lens
-import Ersatz
+import Control.Lens ((<&>), Lens', Traversal, Traversal')
+import Ersatz ( Boolean((||), true, false, (&&), and), Codec, Equatable )
 import GHC.Generics (Generic, Generic1)
 
 import Derive.Applicative (GenericApplicative(..))
@@ -30,14 +30,19 @@ data Block a = Block { stick1, stick2, stick3, stick4, stick5, stick6 :: Stick a
     deriving Codec       via TraversableCodec   Block a
     deriving Applicative via GenericApplicative Block
 
-sticks ::
-    Indexable Int p => Applicative f =>
-    Over p f (Block a) (Block b) (Stick a) (Stick b)
-sticks = conjoined genericEach (indexing genericEach)
+sticks :: Traversal (Block a) (Block b) (Stick a) (Stick b)
+sticks = genericEach
 {-# INLINE sticks #-}
 
-stick :: Int -> Traversal' (Block a) (Stick a)
-stick i = sticks . index i
+stick :: Int -> Lens' (Block a) (Stick a)
+stick 0 f (Block x1 x2 x3 x4 x5 x6) = f x1 <&> \x' -> Block x' x2 x3 x4 x5 x6
+stick 1 f (Block x1 x2 x3 x4 x5 x6) = f x2 <&> \x' -> Block x1 x' x3 x4 x5 x6
+stick 2 f (Block x1 x2 x3 x4 x5 x6) = f x3 <&> \x' -> Block x1 x2 x' x4 x5 x6
+stick 3 f (Block x1 x2 x3 x4 x5 x6) = f x4 <&> \x' -> Block x1 x2 x3 x' x5 x6
+stick 4 f (Block x1 x2 x3 x4 x5 x6) = f x5 <&> \x' -> Block x1 x2 x3 x4 x' x6
+stick 5 f (Block x1 x2 x3 x4 x5 x6) = f x6 <&> \x' -> Block x1 x2 x3 x4 x5 x'
+stick _ _ _ = error "stick: bad index"
+{-# Inline stick #-}
 
 sides :: Traversal' (Stick a) (Side a)
 sides f (Stick a b c x y z w) = Stick a b c <$> f x <*> f y <*> f z <*> f w
@@ -78,14 +83,6 @@ turns (Stick lo mi hi x y z w) =
     , Stick lo mi hi z w x y
     , Stick lo mi hi w x y z
     ]
-
-shifts :: Boolean a => Stick a -> [Stick a]
-shifts (Stick l m h x y z w) =
-        [Stick t f f x y z w, Stick f t f x y z w, Stick f f t x y z w]
-    where
-        -- extra logic preserves empty and solid sticks
-        t = l || m || h
-        f = l && m && h
 
 -----------------------------------------------------------------------
 
