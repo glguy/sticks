@@ -3,7 +3,7 @@ module Render (animate) where
 import Control.Lens (set)
 import Text.Printf (printf)
 
-import Block (noStick, stick, Block(Block), Side(..), Stick(Stick))
+import Block (noStick, stick, Block(Block), Side(..), Stick(Stick), emptyBlock)
 import PathSolver (Action(..), actBlock)
 
 renderAnimation :: (Int, Action) -> Block Bool -> String
@@ -76,10 +76,10 @@ renderLink :: Bool -> Bool -> Double -> Double -> Double -> Double -> Double -> 
 renderLink True True x1 x2 y z1 z2
   | x1 == x2 =
     printf "box { <%f, %f, %f>, <%f, %f, %f>\n\
-           \ texture { T_Wood24 scale 1 } }\n" (0.3 * x1) y z1 (1.5*x2) (y-1) z2
+           \ texture { T_Wood24 scale 1 } }\n" (x1/6) y z1 (1.5*x2) (y-1) z2
   | z1 == z2 =
     printf "box { <%f, %f, %f>, <%f, %f, %f>\n\
-           \ texture { T_Wood24 scale 1 } }\n" x1 y (0.3 * z1) x2 (y-1) (1.5*z2)
+           \ texture { T_Wood24 scale 1 } }\n" x1 y (z1/6) x2 (y-1) (1.5*z2)
 renderLink _ _ _ _ _ _ _ = ""
 
 renderCut :: Bool -> Double -> Double -> Double -> Double -> Double -> String
@@ -95,7 +95,7 @@ renderCut True x1 x2 y z1 z2 =
     x1 y z1 x2 y z2
 
 animate :: [(Int, Action)] -> String
-animate path = go 0 path (pure True)
+animate path = go 0 path emptyBlock
     where
         go :: Int -> [(Int, Action)] -> Block Bool -> String
         go _ [] b = renderBlock b

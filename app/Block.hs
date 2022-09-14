@@ -53,6 +53,9 @@ flipStick (Stick lo mi hi x y z w) = Stick hi mi lo (f x) (f w) (f z) (f y)
     where
         f (Side a b c d e) = Side e d c b a
 
+emptyBlock :: Boolean a => Block a
+emptyBlock = pure true
+
 noStick :: Boolean a => Stick a
 noStick = pure true
 

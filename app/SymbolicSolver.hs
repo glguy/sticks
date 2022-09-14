@@ -16,9 +16,8 @@ selectList' f x = runSelect <$> selectList (f x)
 
 finalExists :: MonadSAT s m => Block Bit -> m (Block Bit)
 finalExists start =
- do final <-
-        dropping 1 sticks (selectList' flips) =<<
-        partsOf (dropping 1 sticks) selectPermutation' =<<
-        sticks (selectList' turns) start
+ do turned   <- sticks (selectList' turns) start
+    permuted <- partsOf (dropping 1 sticks) selectPermutation' turned
+    final    <- dropping 1 sticks (selectList' flips) permuted  
     assert (checkBlock final)
     pure final

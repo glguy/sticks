@@ -49,7 +49,7 @@ main =
              do printf "Path length: %d\n" (length x)
                 printPath x
                 putStrLn ""
-            writeFile "animate.pov" (animate p)
+            writeFile "animation.pov" (animate p)
 
 allFinals :: IO [Block Bool]
 allFinals = go []
