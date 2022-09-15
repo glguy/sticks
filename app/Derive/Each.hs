@@ -1,3 +1,15 @@
+{-|
+Module      : Derive.Each
+Description : Derived Each implementations
+Copyright   : (c) Eric Mertens, 2022
+License     : ISC
+Maintainer  : emertens@gmail.com
+
+This module uses GHC.Generics to derive
+Traversals suitable for use with the Each
+class in lens.
+
+-}
 module Derive.Each (genericEach) where
 
 import Control.Lens (Traversal, confusing)

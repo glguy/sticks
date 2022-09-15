@@ -1,3 +1,17 @@
+{-|
+Module      : Render
+Description : Solution renderer via povray
+Copyright   : (c) Eric Mertens, 2022
+License     : ISC
+Maintainer  : emertens@gmail.com
+
+This module generates a povray script that
+animates a particular action sequence.
+The generated commands are intended to be
+embedded in the included povray animation
+baseline scene.
+
+-}
 module Render (animate) where
 
 import Control.Lens (set)

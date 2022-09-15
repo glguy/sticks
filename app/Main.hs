@@ -1,12 +1,22 @@
-{-
+{-|
+Module      : Main
+Description : Sliding stick puzzle solver
+Copyright   : (c) Eric Mertens, 2022
+License     : ISC
+Maintainer  : emertens@gmail.com
+
+Solve a wooden sliding stick puzzle finding
+all the shortest solutions to all the possible
+valid end-states and emit an animation showing
+the shortest solution.
 
 @
    +-----+
-  /     /|
- / 1 2 / |
+  \/     \/|
+ \/ 1 2 \/ |
 +-----+ 6|
-|  3  |5/
-|  4  |/
+|  3  |5\/
+|  4  |\/
 +-----+
 @
 
@@ -45,12 +55,14 @@ main =
     case sortOn length (mapMaybe solveActions finals) of
         [] -> putStrLn "No solutions"
         p:ps ->
-         do for_ (p:ps) \x ->
+         do writeFile "animation.pov" (animate p)
+            for_ (p:ps) \x ->
              do printf "Path length: %d\n" (length x)
                 printPath x
                 putStrLn ""
-            writeFile "animation.pov" (animate p)
 
+-- | Generate all the arrangements of the block with all
+-- sticks inserted and centered.
 allFinals :: IO [Block Bool]
 allFinals = go []
     where
@@ -64,6 +76,7 @@ allFinals = go []
                 (Unsatisfied, _) -> pure seen
                 _ -> fail "bad solver"
 
+-- | Print out instructions for performing a solution.
 printPath :: [(Int, Action)] -> IO ()
 printPath = traverse_ \(i, a) ->
     printf "%d: %s\n" (i+1)

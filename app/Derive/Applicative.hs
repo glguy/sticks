@@ -1,4 +1,16 @@
 {-# Language UndecidableInstances #-}
+{-|
+Module      : Derive.Applicative
+Description : Derived Applicative instances
+Copyright   : (c) Eric Mertens, 2022
+License     : ISC
+Maintainer  : emertens@gmail.com
+
+This module is intended to be used with DerivingVia
+in order to generate Applicative instances for product
+types.
+
+-}
 module Derive.Applicative (GenericApplicative(..)) where
 
 import GHC.Generics
@@ -22,6 +34,10 @@ instance GApplicative Par1 where
 instance Applicative f => GApplicative (Rec1 f) where
     gpure x = Rec1 (pure x)
     gap (Rec1 f) (Rec1 x) = Rec1 (f <*> x)
+
+instance Monoid e => GApplicative (K1 i e) where
+    gpure _ = K1 mempty
+    gap (K1 x) (K1 y) = K1 (x <> y)
 
 instance GApplicative U1 where
     gpure _ = U1

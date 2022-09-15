@@ -1,3 +1,15 @@
+{-|
+Module      : PathSolver
+Description : Find shortest path to a final state
+Copyright   : (c) Eric Mertens, 2022
+License     : ISC
+Maintainer  : emertens@gmail.com
+
+This module generates the shortest action sequence
+for building a final state by performing a breadth-
+first search to remove sticks until no sticks remain.
+
+-}
 module PathSolver (Action(..), actBlock, solveActions) where
 
 import Control.Lens (over, set, alaf)
@@ -29,7 +41,8 @@ actStick = \case
 -----------------------------------------------------------------------
 
 solveActions :: Block Bool -> Maybe [(Int, Action)]
-solveActions final = listToMaybe [as | (b, as) <- bfsOn fst next (final, []), and b]
+solveActions final =
+    listToMaybe [as | (b, as) <- bfsOn fst next (final, []), and b]
 
 next :: (Block Bool, [(Int, Action)]) -> [(Block Bool, [(Int, Action)])]
 next (b,as) =
@@ -41,12 +54,12 @@ next (b,as) =
 
 edits :: Int -> Block Bool -> Stick Bool -> [(Action, Stick Bool)]
 edits i b s
-    | s == noStick = []
-    | removable i b = [(ActInsert s, noStick)]
-    | otherwise = [(ActDown , shiftUp   s) | not (posHi s)] <>
-                  [(ActUp   , shiftDown s) | not (posLo s)] <>
-                  [(ActRight, turnLeft  s),
-                   (ActLeft , turnRight s)]
+    | s == noStick  = []
+    | removable i b = [(ActInsert s, noStick    )]
+    | otherwise     = [(ActDown    , shiftUp   s) | not (posHi s)] <>
+                      [(ActUp      , shiftDown s) | not (posLo s)] <>
+                      [(ActRight   , turnLeft  s),
+                       (ActLeft    , turnRight s)]
 
 removable :: Int -> Block Bool -> Bool
 removable i b = checkBlock (set (stick i) solidStick b)

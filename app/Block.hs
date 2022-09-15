@@ -1,4 +1,16 @@
 {-# Language RankNTypes, ViewPatterns, UndecidableInstances #-}
+{-|
+Module      : Block
+Description : Representation of the puzzle
+Copyright   : (c) Eric Mertens, 2022
+License     : ISC
+Maintainer  : emertens@gmail.com
+
+This representation is parameterized over a boolean
+type allowing the same representation to be used for
+symbolic and concrete puzzle states.
+
+-}
 module Block where
 
 import Prelude hiding ((||), (&&), and)

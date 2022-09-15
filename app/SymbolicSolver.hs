@@ -1,3 +1,16 @@
+{-|
+Module      : SymbolicSolver
+Description : SAT-solver driven state enumeration
+Copyright   : (c) Eric Mertens, 2022
+License     : ISC
+Maintainer  : emertens@gmail.com
+
+This module enumerates valid final states for
+the puzzle. It runs approximately 4x faster than
+merely enumerating all final states and filting
+for valid ones using backtracking.
+
+-}
 module SymbolicSolver (finalExists) where
 
 import Prelude hiding (all, (||), (&&))

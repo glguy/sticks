@@ -1,4 +1,14 @@
 {-# Language TypeFamilies #-}
+{-|
+Module      : Symbolic.Select
+Description : Generalized symbolic selection
+Copyright   : (c) Eric Mertens, 2022
+License     : ISC
+Maintainer  : emertens@gmail.com
+
+Symbolic choice from a finite set of concrete values.
+
+-}
 module Symbolic.Select
   ( Select
   , runSelect
@@ -9,7 +19,7 @@ module Symbolic.Select
   , selectPermutationN
   ) where
 
-import Control.Applicative
+import Control.Applicative (liftA2)
 import Control.Monad (replicateM, ap)
 import Data.List (tails)
 import Data.List.NonEmpty (NonEmpty(..))
@@ -73,9 +83,11 @@ instance Eq a => Equatable (Select a) where
 instance Ord a => Orderable (Select a) where
     x <? y = runSelect (liftA2 (\x' y' -> bool (x' < y')) x y)
 
+-- | Select a permutation of all the elements in a list.
 selectPermutation :: MonadSAT s m => [a] -> m [Select a]
 selectPermutation xs = selectPermutationN (length xs) xs
 
+-- | Select a permutation of @n@ of the elements in a list.
 selectPermutationN :: MonadSAT s m => Int -> [a] -> m [Select a]
 selectPermutationN n xs
     | n < 0 || length xs < n = error "selectPermutationN: n out of range"

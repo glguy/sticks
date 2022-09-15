@@ -1,4 +1,14 @@
 {-# Language UndecidableInstances #-}
+{-|
+Module      : Symbolic.ChooseBit
+Description : Generalized symbolic choice
+Copyright   : (c) Eric Mertens, 2022
+License     : ISC
+Maintainer  : emertens@gmail.com
+
+Symbolic choice between two symbolic values.
+
+-}
 module Symbolic.ChooseBit (GenericChooseBit(..), ChooseBit(chooseBit)) where
 
 import Prelude hiding ((&&), not)
