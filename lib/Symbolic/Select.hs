@@ -40,8 +40,8 @@ selectList :: MonadSAT s m => [a] -> m (Select a)
 selectList []     = error "selectList: empty list"
 selectList (x:xs) = select (x :| xs)
 
-selectList' :: MonadSAT s m => ChooseBit b => (a -> [b]) -> a -> m b
-selectList' f x = runSelect <$> selectList (f x)
+selectList' :: MonadSAT s m => ChooseBit a => [a] -> m a
+selectList' xs = runSelect <$> selectList xs
 
 -- | Symbolic selection from a non-empty list of alternatives.
 select :: MonadSAT s m => NonEmpty a -> m (Select a)

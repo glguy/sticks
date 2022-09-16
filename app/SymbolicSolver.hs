@@ -11,22 +11,22 @@ merely enumerating all final states and filting
 for valid ones using backtracking.
 
 -}
-module SymbolicSolver (finalExists, completeSearch) where
+module SymbolicSolver (finalExists) where
 
 import Prelude hiding (all, (||), (&&))
-import Control.Lens (dropping, partsOf, iover, indexing)
+import Control.Lens (dropping, partsOf, indexing, iover)
 import Data.Traversable (for)
-import Ersatz
+import Ersatz (assert, Bit, MonadSAT, Bits)
 
-import Block (checkBlock, flips, sticks, turns, Block, Stick(..), noStick, solidStick)
-import Symbolic.Select (selectList', selectPermutation')
-import Symbolic.ChooseBit ( ChooseBit(chooseBit) )
+import Block (checkBlock, flips, sticks, turns, Block, Stick(..))
+import Symbolic.ChooseBit (ChooseBit)
+import Symbolic.Select (selectList', runSelect, selectPermutation')
 
 finalExists :: MonadSAT s m => Block Bit -> m (Block Bit)
 finalExists start =
- do turned   <- sticks (selectList' . turns) start
+ do turned   <- sticks (selectList' turns) start
     permuted <- partsOf (dropping 1 sticks) selectPermutation' turned
-    final    <- dropping 1 sticks (selectList' . flips) permuted  
+    final    <- dropping 1 sticks (selectList' flips) permuted  
     assert (checkBlock final)
     pure final
 
