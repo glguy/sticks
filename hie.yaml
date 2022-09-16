@@ -8,3 +8,5 @@ cradle:
       component: "unruly"
     - path: "./sticks/"
       component: "sticks"
+    - path: "./logicgrid/"
+      component: "logicgrid"

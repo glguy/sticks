@@ -14,9 +14,12 @@ module Symbolic.Select
   , runSelect
   , select
   , selectList
+  , selectList'
   , mergeSelects
   , selectPermutation
+  , selectPermutation'
   , selectPermutationN
+  , selectPermutationN'
   ) where
 
 import Control.Applicative (liftA2)
@@ -36,6 +39,9 @@ data Select a = Selected a | Choose (Select a) (Select a) Bit
 selectList :: MonadSAT s m => [a] -> m (Select a)
 selectList []     = error "selectList: empty list"
 selectList (x:xs) = select (x :| xs)
+
+selectList' :: MonadSAT s m => ChooseBit b => (a -> [b]) -> a -> m b
+selectList' f x = runSelect <$> selectList (f x)
 
 -- | Symbolic selection from a non-empty list of alternatives.
 select :: MonadSAT s m => NonEmpty a -> m (Select a)
@@ -83,9 +89,21 @@ instance Eq a => Equatable (Select a) where
 instance Ord a => Orderable (Select a) where
     x <? y = runSelect (liftA2 (\x' y' -> bool (x' < y')) x y)
 
+instance Num a => Num (Select a) where
+    (+) = liftA2 (+)
+    (*) = liftA2 (*)
+    abs = fmap abs
+    signum = fmap signum
+    fromInteger = pure . fromInteger
+    negate = fmap negate
+    (-) = liftA2 (-)
+
 -- | Select a permutation of all the elements in a list.
 selectPermutation :: MonadSAT s m => [a] -> m [Select a]
 selectPermutation xs = selectPermutationN (length xs) xs
+
+selectPermutation' :: MonadSAT s m => ChooseBit a => [a] -> m [a]
+selectPermutation' xs = map runSelect <$> selectPermutation xs
 
 -- | Select a permutation of @n@ of the elements in a list.
 selectPermutationN :: MonadSAT s m => Int -> [a] -> m [Select a]
@@ -95,6 +113,9 @@ selectPermutationN n xs
      do ys <- replicateM n (selectList xs)
         assert (unsafeUniqueSelects ys)
         pure ys
+
+selectPermutationN' :: MonadSAT s m => ChooseBit a => Int -> [a] -> m [a]
+selectPermutationN' n xs = map runSelect <$> selectPermutationN n xs
 
 -- | This function is only intended to be used to two Select
 -- values that were constructed in the exact same fashion.
