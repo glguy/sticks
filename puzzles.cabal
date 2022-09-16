@@ -39,6 +39,7 @@ library
         Searching.PQueue
         Searching.Queue
         Searching.Search
+        Symbolic
         Symbolic.ChooseBit
         Symbolic.Counting
         Symbolic.Select
@@ -48,6 +49,7 @@ library
         containers,
         ersatz,
         lens,
+        transformers,
 
 executable sticks
     import:           warnings
@@ -67,3 +69,45 @@ executable sticks
         ersatz,
         lens,
         puzzles
+
+executable dungeons
+    import:           warnings
+    import:           extensions
+    main-is:          Main.hs
+    hs-source-dirs:   dungeons
+    default-language: Haskell2010
+
+    other-modules:
+        Grids
+        Parser
+        Puzzle
+        Rendering
+        Solution
+
+    build-depends:
+        ansi-terminal,
+        bytestring,
+        base,
+        containers,
+        ersatz,
+        puzzles,
+        split,
+
+executable unruly
+    import:           warnings
+    import:           extensions
+    main-is:          Main.hs
+    hs-source-dirs:   unruly
+    default-language: Haskell2010
+
+    other-modules:
+        Parser
+        Renderer
+        Puzzle
+
+    build-depends:
+        ansi-terminal,
+        base,
+        containers,
+        ersatz,
+        puzzles,

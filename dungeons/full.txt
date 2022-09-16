@@ -1,0 +1,72 @@
+.....OOO O...OOMO O...OOOO OOMOMOOO M......M MOO..... ...OOMOM .....OM.
+.O.O...M O...OO.O ..O.O... O......O OOO.OOOO .O..OMOM ...O.... .O...OO.
+.OMO.OOO OC..OO.O .OM.O.C. O.OOOO.M .MO...OM ...OOOOO .C...O.O .OC..OO.
+.OOO...M OOO.O... ..O..... M...OO.O .OOOO... O.OO...O OOO.OOMO .OOOOOO.
+...O.OOO OMO...O. O...OOOO O.O....M .O....O. M....C.O OMO.OOOO ........
+.C.O...M O.O.O.OM O.O.O... M.OOOO.O ...O.OM. O.OO...O M......O OO.OOO.O
+...O.OOO ......OO M.O...O. O......O OOOO.OOO ...OOOOO O.OOC..O MO.OM..O
+OOOO...M MOOOMOOO OOOMOMOM OOOMOMOO M......M MO.MOOOO O.MO...O ...OOMOO
+
+MOMOOOOO OOOO.... ...OO... OOOOOOM. O...OOMO ...O...O O.C.OM.O ...OO...
+.O.O...O .MO..OO. .O...C.. OO...OO. O.C.OO.O MO.OC..O O...OO.O .C.OO.C.
+.....C.O .OO.OOOM .OOOO... OO.C.OM. O...OO.O OO.O...O O...OM.. ...O....
+.O.O...O .....OOO ....OOOO OO...OO. M.OOOM.M .....OOO OO.OOOO. OO...OOO
+.O.OOOOO O.OO...O OOO..OMO OM.OOOM. O...OO.O .OOO.O.M OO.OMO.. OOOO.OOO
+.O.....M O.OO...O ...O.... OO..MOO. O.O.O... .OM..O.O OO.O...O ........
+.OOOO.OO M.MO.C.O ..COOOO. MOO.OO.. M.....O. .OOO.... .....O.. .C.OO.C.
+.......M OMOOOOOO ........ .......O OOMOO... .....OOM MOOO.MOM ...OO...
+
+O...OOOO O...O... OOOOOMOO OOM.MOOO MOOOOOOM OOOOO... ...O...O O...OOMO
+O.C.O... O.C.O.C. ...O..OO MOO.OOOO ........ O..COC.. .C.O...O OMO..O.O
+....OC.. ....O... .C.O.OOO .OO.OMOM .O.OO.O. O...O... ...O.C.O OOOO...M
+.OOOO... .OOOO.OO .......O ..O.O.O. MO...... O.....OO OO...OOO OOOO.O.O
+.OOOOO.O .......O OOOOOO.O O.....O. OO.OO.OM OOOOO.OM OOOO..OM OMO..OMO
+.OMOMO.O OO.OOO.O M......O O.O.O... O...O..O ........ ...OO... ....OOOO
+.......O OM.MOM.M OO.O.OOO OMOMOO.O O.C.OO.. .OOOOOO. C.....O. MOO.OOMO
+OMOMOMOO OOMOOOMO OOMO...M OOOOOM.M O...OOOM .MOM.... ...OO... OOM....O
+
+O.....OO ........ OOOOO... O....... ...O...O .MOOOMOO OOOO...O ......OM
+..OOO... .OOOOOO. ...OM.O. ..OOOMO. MO.O.C.O .OOMO.OO OMOO..CO C..OO...
+.OOMOOO. .O....O. ...OO... .O...OO. OO.O...O ..O....M .......O ...OOO.O
+....O... ...OOMO. C..O..OM .O.C.O.. .....OOO O...OOOO .OOOOOOO OOOOMO.M
+OOO.O.OO .O.OOOO. OO.O.OOO .O...O.O .OOOOOOO ..O.O... .OO...MO O.C....O
+....O... .O..O... OM...... .MO.O... .......M .OO....C ....OOOO O...OO.M
+..COOC.. .MOMO.C. OO.OOC.. .OO.O.O. .O.O.O.O ..OOO... O.O.OO.M O...OM.O
+...OO... OOOOO... OO.MO... ......OM .......M O..MOOOO M.O....O OOOOOO.M
+
+OOOO...O ........ OMO...MO ...MO... OOOOOM.O OOOOOOM. OOOOMOOM MOOOM.MO
+C..OMO.. .OOOOOO. O.O.OOOO .O.OO.O. O...OO.M MOMOMOO. ...O.O.. ...OO.OO
+...OOOO. .O...O.. .......M MO....O. O.C.OM.O ...O.... ..CO.O.O MO..O...
+...OM... .OC..O.O .O.OOO.O OO.OOOOM O...OO.M OO.OOO.O ...O.O.O OOO...OM
+.OOOOOO. .O...O.. .O.OMO.O ......OO OO.OOM.O O...O... O.OO.... MOO.OOOO
+..O...O. .OO.OOO. .......M .OO.O... ...OOO.M OMO...O. O.O..OO. .....OOM
+O.O.O.O. ..O.OMO. O.O.OOOO .OO.O..C .OOO...O OOOOMOO. O...OOOM OO.O....
+O...O... O....... OMO...MO ....O... .....OOO OOOOOOM. M.OMOOOO OM.OOMOM
+
+OMOO...O OOOOOM.M OMO...MO ...OOOOO .......O OOOO...O OOOOO... OOOOO...
+O.OO...O OMOOOO.O ....OOOO .O.O...O .OOOOO.M OM...O.M ...O..O. ......O.
+O.OO.C.O ..O....O .O.OO... .O.O.C.O .O...O.O OOO.OOOO .C.O.O.. .OOOOO..
+...O.OOO .OO.OOOO .O.OO... ...O...O .OC..O.M OOM.OMOM .......O ...C.O.O
+.O....OO .......O ...MOC.. .O.OO.OO .O.....O MOO..... OOO.OO.M .O...O.O
+...OO... MO.OOO.O .O.OO.OO ........ .OOOOOOO .O..OO.O OM..MO.O .O...O..
+O.OOO.O. OO...O.. .O...... O.O.O.O. ..OMO... ...OOOMO OOO.OO.O .OOOOOO.
+M.MOOMOM OOMOMOOM ...OMOOM O....... O.....OM OO.MOOOO OM..MOMO ........
+
+OOO..MOO OM.OOOOO M.OOOOOM O...O... O...OMOO OMOOOO.M OO...... O...OOOO
+MOO.OOOO OO.O...O O..O.... ..O.OC.. ..O....M ....MO.O ...OOMO. ..O....M
+....O... .....O.. OO.O.OOO .OO.O... .OOO.O.O .OOOOO.O .C.OOOO. .OMO.O.O
+O.OOOC.. MOO.OMO. OO...... ..O.OO.O ..O..O.M .OM.O... ...OO... .....O.M
+M...O... OO...... ...OO.O. O.O.MO.. O...OO.O .OO...O. OOOO..O. OO.OOO.O
+OOO...OO OM.O.OO. .O...... ..OOOOO. OO.OOO.M ..OOOOO. C....O.. O...O...
+OO..O..M OOOO.OOM .OOO.OOO .OO...O. OM.....O O....... ...O...O O..CO.O.
+M..OOOMO M....MOO MOOO...M ....O... OOOMOMOO OOMOMOMO ...OMO.M O...O...
+
+...OOMOM ...OOM.O MOOM.OOM OOO..... OOO...OO ...O...M OM..OMOM ....O...
+..COO.O. .O..OO.O ...O.MO. ....OOO. O...O... ...O.OOO OOO..... .OO.O.O.
+....O... MOO....O OO.O.OO. .OMOOMO. M.O.O... .C.O..OM OOO.O.O. ..O.O.O.
+OOO...OM OOOO.OMO MO...... .OOOO... O...OC.. OO.OO... OM...... O.O.....
+MO..OOOO ...O.OOM ...OO.OO .OOOOOOO OOO.OOOO OM.OOO.O OO.OOOO. ..OO.O.O
+...OO... ..CO.... OO.....O .OMOOM.. .....O.M OO.OOO.O ...O.... .OOO.O.O
+OO...... ...O.OOM MOO.OO.M .....OO. MOMO.O.O OM..O..O MOMO..CO .OO....O
+M..OOC.. OO...OOO ....OM.O OOOO.... OOOO...O OOO...OO OOOO...O ....OMOO
+

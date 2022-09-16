@@ -28,7 +28,8 @@ import Control.Lens (toListOf)
 import Data.Maybe (mapMaybe)
 import Data.List (sortOn)
 import Data.Foldable (traverse_, for_)
-import Ersatz (Boolean, bool, true, false, encode, assert, solveWith, cryptominisat5, (/==), Result(Unsatisfied, Satisfied))
+import Ersatz (Boolean, bool, true, false, encode, assert, (/==))
+import Symbolic (solve)
 import Text.Printf (printf)
 
 import Block (sides, Block(Block), Side(..), Stick(Stick))
@@ -67,14 +68,13 @@ allFinals :: IO [Block Bool]
 allFinals = go []
     where
         go seen =
-         do res <- solveWith cryptominisat5
+         do res <- solve
              do new <- finalExists block0
                 for_ seen \old -> assert (new /== encode old)
                 pure new
             case res of
-                (Satisfied, Just b) -> go (b:seen)
-                (Unsatisfied, _) -> pure seen
-                _ -> fail "bad solver"
+                Just b  -> go (b:seen)
+                Nothing -> pure seen
 
 -- | Print out instructions for performing a solution.
 printPath :: [(Int, Action)] -> IO ()

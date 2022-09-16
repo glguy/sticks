@@ -1,0 +1,10 @@
+cradle:
+  cabal:
+    - path: "./lib/"
+      component: "puzzles:lib:puzzles"
+    - path: "./dungeons/"
+      component: "dungeons"
+    - path: "./unruly/"
+      component: "unruly"
+    - path: "./sticks/"
+      component: "sticks"
