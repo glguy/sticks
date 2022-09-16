@@ -22,6 +22,9 @@ import Block (checkBlock, flips, sticks, turns, Block, Stick(..), noStick, solid
 import Symbolic.Select (selectList', selectPermutation')
 import Symbolic.ChooseBit ( ChooseBit(chooseBit) )
 
+-- | Permute, flip, and spin the sticks into their final locations.
+-- To reduce useless symmetries, the first stick is locked into
+-- the first location unflipped.
 finalExists :: MonadSAT s m => Block Bit -> m (Block Bit)
 finalExists start =
  do turned   <- sticks (selectList' . turns) start
@@ -35,11 +38,7 @@ finalExists start =
 completeSearch ::
     MonadSAT s m => Block Bit -> m ([Bits], [Block Bit], Block Bit)
 completeSearch start =
- do -- Permute, flip, and spin the sticks into their final locations.
-    -- To reduce useless symmetries, the first stick is locked into
-    -- the first location unflipped.
-    final <- finalExists start
-
+ do final <- finalExists start
     order <- selectPermutation' [0,1,2,3,4,5]
 
     -- generate the sequence of adding in sticks one-by-one
