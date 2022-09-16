@@ -1,5 +1,5 @@
 cabal-version:      3.4
-name:               sticks
+name:               puzzles
 version:            0.1.0.0
 license:            ISC
 license-file:       LICENSE
@@ -10,27 +10,7 @@ build-type:         Simple
 common warnings
     ghc-options: -Wall
 
-executable sticks
-    import:           warnings
-    main-is:          Main.hs
-    hs-source-dirs:   app
-    default-language: Haskell2010
-
-    other-modules:
-        Block
-        SymbolicSolver
-        PathSolver
-        Render
-        Derive.Applicative
-        Derive.Codec
-        Derive.Each
-        Searching.PQueue
-        Searching.Queue
-        Searching.Search
-        Symbolic.ChooseBit
-        Symbolic.Counting
-        Symbolic.Select
-
+common extensions
     -- things that we shouldn't ever need to specify
     default-extensions:
         BlockArguments
@@ -47,8 +27,43 @@ executable sticks
         StandaloneDeriving
         TypeOperators
 
+library
+    import:           warnings
+    import:           extensions
+    hs-source-dirs:   lib
+    default-language: Haskell2010
+    exposed-modules:
+        Derive.Applicative
+        Derive.Codec
+        Derive.Each
+        Searching.PQueue
+        Searching.Queue
+        Searching.Search
+        Symbolic.ChooseBit
+        Symbolic.Counting
+        Symbolic.Select
+
     build-depends:
         base,
         containers,
         ersatz,
         lens,
+
+executable sticks
+    import:           warnings
+    import:           extensions
+    main-is:          Main.hs
+    hs-source-dirs:   sticks
+    default-language: Haskell2010
+
+    other-modules:
+        Block
+        SymbolicSolver
+        PathSolver
+        Render
+
+    build-depends:
+        base,
+        ersatz,
+        lens,
+        puzzles
