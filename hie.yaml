@@ -10,3 +10,5 @@ cradle:
       component: "sticks"
     - path: "./logicgrid/"
       component: "logicgrid"
+    - path: "./sudoku/"
+      component: "sudoku"
