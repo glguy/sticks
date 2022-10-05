@@ -1,5 +1,6 @@
-module Symbolic (solve) where
+module Symbolic (solve, (==?)) where
 
+import Prelude hiding ((&&), (||), not)
 import Ersatz
 import Control.Monad.Trans.State
 
@@ -10,3 +11,7 @@ solve m =
         (Satisfied, Just x) -> pure (Just x)
         (Unsatisfied, _   ) -> pure Nothing
         _ -> fail "solve: bad solver result"
+
+(==?) :: Boolean a => a -> a -> a
+x ==? y = choose (not y) y x
+infix 4 ==?

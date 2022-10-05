@@ -23,6 +23,7 @@ import Prelude hiding ((&&), or, and, all, not, any)
 import Data.List (tails, transpose)
 import Ersatz
 import Derive.Codec ( TraversableCodec(..) )
+import Symbolic ( (==?) )
 import Symbolic.Counting ( exactly )
 
 newtype Board a = Board [[Cell a]]
@@ -32,10 +33,6 @@ newtype Board a = Board [[Cell a]]
 data Cell a = Given Bool | Open a
     deriving (Read, Show, Functor, Foldable, Traversable)
     deriving Codec via TraversableCodec Cell a
-
-(==?) :: Boolean a => a -> a -> a
-x ==? y = choose (not y) y x
-infix 4 ==?
 
 cellBoolean :: Boolean b => Cell b -> b
 cellBoolean (Given x) = bool x
